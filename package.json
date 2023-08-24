@@ -38,6 +38,14 @@
     "typescript": "~4.5.4"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@fontsource-variable/open-sans": "^5.0.9",
+    "@mantine/core": "^6.0.19",
+    "@mantine/dropzone": "^6.0.19",
+    "@mantine/form": "^6.0.19",
+    "@mantine/hooks": "^6.0.19",
+    "@mantine/notifications": "^6.0.19",
+    "@tabler/icons-react": "^2.32.0",
     "electron-squirrel-startup": "^1.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"

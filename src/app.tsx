@@ -1,7 +1,19 @@
+import '@fontsource-variable/open-sans'
+
+import { MantineProvider } from '@mantine/core'
 import { createRoot } from 'react-dom/client'
+import { Landing } from './pages/landing'
 
 function App() {
-  return <div>Hello world</div>
+  return (
+    <MantineProvider
+      theme={{ fontFamily: 'Open Sans Variable, sans-serif', primaryColor: 'indigo' }}
+      withGlobalStyles
+      withNormalizeCSS
+    >
+      <Landing />
+    </MantineProvider>
+  )
 }
 
 function render() {
