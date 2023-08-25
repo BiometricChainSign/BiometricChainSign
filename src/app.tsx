@@ -1,13 +1,14 @@
 import '@fontsource-variable/open-sans'
 
-import { MantineProvider } from '@mantine/core'
+import { Image, MantineProvider, Stack, Text } from '@mantine/core'
 import { createRoot } from 'react-dom/client'
+import { BrowserRouter, Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum'
-import { configureChains, createConfig, WagmiConfig } from 'wagmi'
+import { configureChains, createConfig, useAccount, WagmiConfig } from 'wagmi'
 import { Web3Modal } from '@web3modal/react'
 import { mainnet } from 'wagmi/chains'
 
-import { Landing } from './pages/landing'
+import { ConnectPage } from './pages/connect'
 import { Bar } from './components/bar'
 
 const chains = [mainnet]
@@ -31,8 +32,17 @@ function App() {
       withNormalizeCSS
     >
       <WagmiConfig config={wagmiConfig}>
-        <Bar />
-        <Landing />
+        <BrowserRouter>
+          <Routes>
+            <Route element={<Layout />}>
+              <Route path='/' element={<ConnectPage />} />
+              <Route
+                path='connected'
+                element={<Image src='https://upload.wikimedia.org/wikipedia/pt/8/8d/Jailson_Mendes.jpg' />}
+              />
+            </Route>
+          </Routes>
+        </BrowserRouter>
       </WagmiConfig>
 
       <Web3Modal
@@ -46,6 +56,26 @@ function App() {
         }}
       />
     </MantineProvider>
+  )
+}
+
+function Layout() {
+  const location = useLocation()
+  const { isConnected } = useAccount()
+
+  if (location.pathname !== '/' && !isConnected) {
+    return <Navigate to='/' />
+  }
+
+  if (location.pathname === '/' && isConnected) {
+    return <Navigate to='/connected' />
+  }
+
+  return (
+    <Stack w='100%' maw='1200px' mih='100vh' mx='auto' px='xs'>
+      <Bar />
+      <Outlet />
+    </Stack>
   )
 }
 
