@@ -10,6 +10,7 @@ import { mainnet } from 'wagmi/chains'
 
 import { ConnectPage } from './pages/connect'
 import { Bar } from './components/bar'
+import { SelectDocument } from './pages/select-document'
 
 const chains = [mainnet]
 const projectId = '1790d0716aba5ac0c6ac1e5a5c8968cd'
@@ -36,10 +37,7 @@ function App() {
           <Routes>
             <Route element={<Layout />}>
               <Route path='/' element={<ConnectPage />} />
-              <Route
-                path='connected'
-                element={<Image src='https://upload.wikimedia.org/wikipedia/pt/8/8d/Jailson_Mendes.jpg' />}
-              />
+              <Route path='connected' element={<SelectDocument />} />
             </Route>
           </Routes>
         </BrowserRouter>
@@ -72,7 +70,7 @@ function Layout() {
   }
 
   return (
-    <Stack w='100%' maw='1200px' mih='100vh' mx='auto' px='xs'>
+    <Stack w='100%' maw='1200px' mih='100vh' mx='auto' px='xs' spacing={0}>
       <Bar />
       <Outlet />
     </Stack>
