@@ -8,9 +8,10 @@ import { configureChains, createConfig, useAccount, WagmiConfig } from 'wagmi'
 import { Web3Modal } from '@web3modal/react'
 import { mainnet } from 'wagmi/chains'
 
-import { ConnectPage } from './pages/connect'
 import { Bar } from './components/bar'
-import { SelectDocument } from './pages/select-document'
+import { ConnectPage } from './pages/connect'
+import { DocumentSelectPage } from './pages/document-select'
+import { FaceCapturePage } from './pages/face-capture'
 
 const chains = [mainnet]
 const projectId = '1790d0716aba5ac0c6ac1e5a5c8968cd'
@@ -37,7 +38,8 @@ function App() {
           <Routes>
             <Route element={<Layout />}>
               <Route path='/' element={<ConnectPage />} />
-              <Route path='connected' element={<SelectDocument />} />
+              <Route path='/document-select' element={<DocumentSelectPage />} />
+              <Route path='/face-capture' element={<FaceCapturePage />} />
             </Route>
           </Routes>
         </BrowserRouter>
@@ -66,7 +68,7 @@ function Layout() {
   }
 
   if (location.pathname === '/' && isConnected) {
-    return <Navigate to='/connected' />
+    return <Navigate to='/document-select' />
   }
 
   return (
