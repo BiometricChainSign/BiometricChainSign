@@ -24,7 +24,11 @@ export function DocumentSelectPage() {
 
     console.log(hashHex)
 
-    navigate('/face-capture')
+    if (Math.round(Math.random())) {
+      navigate('/face-capture')
+    } else {
+      navigate('/signatory-addresses')
+    }
   }
 
   return (

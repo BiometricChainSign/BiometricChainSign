@@ -5,12 +5,6 @@ import { useCallback, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Webcam from 'react-webcam'
 
-const videoConstraints = {
-  width: 1280,
-  height: 720,
-  facingMode: 'user',
-}
-
 export function FaceCapturePage() {
   const webcamRef = useRef<Webcam>(null)
   const navigate = useNavigate()

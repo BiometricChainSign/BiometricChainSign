@@ -13,6 +13,7 @@ import { Bar } from './components/bar'
 import { ConnectPage } from './pages/connect'
 import { DocumentSelectPage } from './pages/document-select'
 import { FaceCapturePage } from './pages/face-capture'
+import { SignatoryAddressesPage } from './pages/signatory-addresses'
 
 const chains = [mainnet]
 const projectId = '1790d0716aba5ac0c6ac1e5a5c8968cd'
@@ -43,6 +44,7 @@ function App() {
               <Route path='/' element={<ConnectPage />} />
               <Route path='/document-select' element={<DocumentSelectPage />} />
               <Route path='/face-capture' element={<FaceCapturePage />} />
+              <Route path='/signatory-addresses' element={<SignatoryAddressesPage />} />
             </Route>
           </Routes>
         </BrowserRouter>
