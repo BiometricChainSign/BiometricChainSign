@@ -17,7 +17,13 @@
     "email": "arturnunespe@gmail.com"
   },
   "license": "MIT",
-  "permissions": [{ "media": ["videoCapture"] }],
+  "permissions": [
+    {
+      "media": [
+        "videoCapture"
+      ]
+    }
+  ],
   "devDependencies": {
     "@electron-forge/cli": "^6.4.1",
     "@electron-forge/maker-deb": "^6.4.1",

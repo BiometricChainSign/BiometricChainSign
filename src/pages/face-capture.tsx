@@ -1,5 +1,6 @@
 import { ActionIcon, AspectRatio, Box, Button, Loader, Stack, Title, useMantineTheme } from '@mantine/core'
-import { IconCamera, IconX } from '@tabler/icons-react'
+import { notifications } from '@mantine/notifications'
+import { IconCamera, IconCheck, IconX } from '@tabler/icons-react'
 import { useCallback, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Webcam from 'react-webcam'
@@ -21,6 +22,16 @@ export function FaceCapturePage() {
   const capture = useCallback(() => {
     const imageSrc = webcamRef.current.getScreenshot()
     console.log(imageSrc)
+
+    notifications.show({
+      title: 'Sucesso',
+      message: 'Documento assinado!',
+      color: 'teal',
+      icon: <IconCheck />,
+      autoClose: 10000,
+    })
+
+    navigate('/document-select')
   }, [webcamRef])
 
   const theme = useMantineTheme()

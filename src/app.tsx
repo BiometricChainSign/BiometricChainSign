@@ -1,7 +1,8 @@
 import '@fontsource-variable/open-sans'
 
-import { Image, MantineProvider, Stack, Text } from '@mantine/core'
 import { createRoot } from 'react-dom/client'
+import { MantineProvider, Stack } from '@mantine/core'
+import { Notifications } from '@mantine/notifications'
 import { BrowserRouter, Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum'
 import { configureChains, createConfig, useAccount, WagmiConfig } from 'wagmi'
@@ -33,6 +34,8 @@ function App() {
       withGlobalStyles
       withNormalizeCSS
     >
+      <Notifications />
+
       <WagmiConfig config={wagmiConfig}>
         <BrowserRouter>
           <Routes>
