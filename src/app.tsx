@@ -15,6 +15,7 @@ import { DocumentSelectPage } from './pages/document-select'
 import { FaceCapturePage } from './pages/face-capture'
 import { SignatoryAddressesPage } from './pages/signatory-addresses'
 import { VerificationSuccessPage } from './pages/verification-success'
+import { SigningSuccessPage } from './pages/signing-success'
 
 const chains = [mainnet]
 const projectId = '1790d0716aba5ac0c6ac1e5a5c8968cd'
@@ -46,6 +47,7 @@ function App() {
               <Route path='/document-select' element={<DocumentSelectPage />} />
               <Route path='/face-capture' element={<FaceCapturePage />} />
               <Route path='/signatory-addresses' element={<SignatoryAddressesPage />} />
+              <Route path='/signing-success' element={<SigningSuccessPage />} />
               <Route path='/verification-success' element={<VerificationSuccessPage />} />
             </Route>
           </Routes>

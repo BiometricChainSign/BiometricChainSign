@@ -1,7 +1,6 @@
 import { ActionIcon, AspectRatio, Box, Button, Loader, Stack, Title, useMantineTheme } from '@mantine/core'
-import { notifications } from '@mantine/notifications'
-import { IconCamera, IconCheck, IconX } from '@tabler/icons-react'
-import { useCallback, useEffect, useRef } from 'react'
+import { IconCamera, IconX } from '@tabler/icons-react'
+import { useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Webcam from 'react-webcam'
 
@@ -22,15 +21,7 @@ export function FaceCapturePage() {
     console.log(imageSrc)
 
     if (navigationState?.action === 'sign') {
-      notifications.show({
-        title: 'Sucesso',
-        message: 'Documento assinado!',
-        color: 'teal',
-        icon: <IconCheck />,
-        autoClose: 10000,
-      })
-
-      navigate('/document-select')
+      navigate('/signing-success')
     }
 
     if (navigationState?.action === 'verify') {
