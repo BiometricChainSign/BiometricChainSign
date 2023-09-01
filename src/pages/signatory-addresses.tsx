@@ -1,5 +1,5 @@
-import { Box, Button, CheckIcon, Code, Stack, Text, Title, useMantineTheme } from '@mantine/core'
-import { IconCheck, IconFileCheck } from '@tabler/icons-react'
+import { Button, Code, Group, Stack, Text, Title, useMantineTheme } from '@mantine/core'
+import { IconCheck, IconFaceId, IconFileCheck } from '@tabler/icons-react'
 import { useNavigate } from 'react-router-dom'
 
 export function SignatoryAddressesPage() {
@@ -20,9 +20,15 @@ export function SignatoryAddressesPage() {
         <Code style={{ fontSize: theme.fontSizes.lg }}>0x000000000000000000000000000000</Code>
       </Stack>
 
-      <Button leftIcon={<IconCheck />} variant='light' onClick={() => navigate('/document-select')}>
-        Concluir
-      </Button>
+      <Group>
+        <Button leftIcon={<IconCheck />} variant='light' onClick={() => navigate('/document-select')}>
+          Concluir
+        </Button>
+
+        <Button leftIcon={<IconFaceId />} onClick={() => navigate('/face-capture', { state: { action: 'verify' } })}>
+          Verificar assinatura
+        </Button>
+      </Group>
     </Stack>
   )
 }

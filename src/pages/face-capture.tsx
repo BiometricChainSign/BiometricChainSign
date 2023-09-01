@@ -2,31 +2,41 @@ import { ActionIcon, AspectRatio, Box, Button, Loader, Stack, Title, useMantineT
 import { notifications } from '@mantine/notifications'
 import { IconCamera, IconCheck, IconX } from '@tabler/icons-react'
 import { useCallback, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import Webcam from 'react-webcam'
+
+type NavigationState = { action: 'sign' | 'verify' } | undefined
 
 export function FaceCapturePage() {
   const webcamRef = useRef<Webcam>(null)
   const navigate = useNavigate()
+  const location = useLocation()
+  const navigationState = location.state as NavigationState
 
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ video: true })
   }, [])
 
-  const capture = useCallback(() => {
-    const imageSrc = webcamRef.current.getScreenshot()
+  function capture() {
+    const imageSrc = webcamRef.current?.getScreenshot()
     console.log(imageSrc)
 
-    notifications.show({
-      title: 'Sucesso',
-      message: 'Documento assinado!',
-      color: 'teal',
-      icon: <IconCheck />,
-      autoClose: 10000,
-    })
+    if (navigationState?.action === 'sign') {
+      notifications.show({
+        title: 'Sucesso',
+        message: 'Documento assinado!',
+        color: 'teal',
+        icon: <IconCheck />,
+        autoClose: 10000,
+      })
 
-    navigate('/document-select')
-  }, [webcamRef])
+      navigate('/document-select')
+    }
+
+    if (navigationState?.action === 'verify') {
+      navigate('/verification-success')
+    }
+  }
 
   const theme = useMantineTheme()
 

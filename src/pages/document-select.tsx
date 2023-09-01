@@ -25,7 +25,7 @@ export function DocumentSelectPage() {
     console.log(hashHex)
 
     if (Math.round(Math.random())) {
-      navigate('/face-capture')
+      navigate('/face-capture', { state: { action: 'sign' } })
     } else {
       navigate('/signatory-addresses')
     }
