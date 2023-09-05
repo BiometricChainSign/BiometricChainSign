@@ -9,7 +9,21 @@ export function ConnectPage() {
     <Stack h='100%' m='auto' justify='center' align='center'>
       <Title>Bem-vindo</Title>
 
-      <Button onClick={open} leftIcon={<IconCurrencyEthereum stroke='1' />}>
+      <Button
+        onClick={() => {
+          window.electron
+            .runPythonScript(['a', 'b'])
+            .then(output => {
+              console.log(output)
+            })
+            .catch(error => {
+              console.log(error)
+            })
+
+          // open()
+        }}
+        leftIcon={<IconCurrencyEthereum stroke='1' />}
+      >
         Conectar carteira
       </Button>
     </Stack>
