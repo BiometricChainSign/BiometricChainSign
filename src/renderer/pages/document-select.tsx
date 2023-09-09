@@ -11,7 +11,7 @@ import {
 import { IconFile, IconUpload, IconX } from '@tabler/icons-react'
 import { useNavigate } from 'react-router-dom'
 
-export function DocumentSelectPage() {
+export default function DocumentSelectPage() {
   const theme = useMantineTheme()
   const navigate = useNavigate()
 

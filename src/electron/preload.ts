@@ -1,14 +1,14 @@
 export async function runPythonScript<T>(argv: string[]): Promise<T> {
-  const output = (await new Promise(resolve => {
+  const result = (await new Promise(resolve => {
     ipcRenderer.once('pythonScript', (event, args) => {
       resolve(args)
     })
 
     ipcRenderer.send('pythonScript', argv)
   })) as Promise<T> | Error
-  if (output instanceof Error) throw new Error(output.message)
+  if (result instanceof Error) throw new Error(result.message)
 
-  return output
+  return result
 }
 
 import { ipcRenderer, contextBridge } from 'electron'

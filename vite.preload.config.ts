@@ -1,7 +1,8 @@
+import { resolve } from 'path'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
   build: {
-    outDir: 'dist',
+    outDir: resolve(__dirname, 'dist'),
   },
 })

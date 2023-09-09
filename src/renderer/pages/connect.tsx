@@ -2,7 +2,7 @@ import { Button, Stack, Title } from '@mantine/core'
 import { IconCurrencyEthereum } from '@tabler/icons-react'
 import { useWeb3Modal } from '@web3modal/react'
 
-export function ConnectPage() {
+export default function ConnectPage() {
   const { open } = useWeb3Modal()
 
   return (
@@ -12,7 +12,7 @@ export function ConnectPage() {
       <Button
         onClick={() => {
           window.electron
-            .runPythonScript(['a', 'b'])
+            .runPythonScript<string>(['a', 'b'])
             .then(output => {
               console.log(output)
             })

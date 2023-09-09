@@ -2,7 +2,7 @@ import { Button, Stack, Title, useMantineTheme } from '@mantine/core'
 import { IconCheck, IconFileCheck } from '@tabler/icons-react'
 import { useNavigate } from 'react-router-dom'
 
-export function SigningSuccessPage() {
+export default function SigningSuccessPage() {
   const navigate = useNavigate()
   const theme = useMantineTheme()
 

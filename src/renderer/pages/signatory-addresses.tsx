@@ -2,7 +2,7 @@ import { Button, Code, Group, Stack, Text, Title, useMantineTheme } from '@manti
 import { IconCheck, IconFaceId, IconFileCheck } from '@tabler/icons-react'
 import { useNavigate } from 'react-router-dom'
 
-export function SignatoryAddressesPage() {
+export default function SignatoryAddressesPage() {
   const navigate = useNavigate()
   const theme = useMantineTheme()
 

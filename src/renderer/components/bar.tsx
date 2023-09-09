@@ -2,7 +2,7 @@ import { ActionIcon, Group, Text } from '@mantine/core'
 import { IconPower } from '@tabler/icons-react'
 import { useAccount, useDisconnect } from 'wagmi'
 
-export function Bar() {
+export default function Bar() {
   const { address } = useAccount()
   const { disconnect, isLoading } = useDisconnect()
 

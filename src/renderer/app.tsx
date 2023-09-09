@@ -1,21 +1,14 @@
 import '@fontsource-variable/open-sans'
 
 import { createRoot } from 'react-dom/client'
-import { MantineProvider, Stack } from '@mantine/core'
+import { MantineProvider } from '@mantine/core'
 import { Notifications } from '@mantine/notifications'
-import { BrowserRouter, Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum'
-import { configureChains, createConfig, useAccount, WagmiConfig } from 'wagmi'
+import { configureChains, createConfig, WagmiConfig } from 'wagmi'
 import { Web3Modal } from '@web3modal/react'
 import { mainnet } from 'wagmi/chains'
 
-import { Bar } from './components/bar'
-import { ConnectPage } from './pages/connect'
-import { DocumentSelectPage } from './pages/document-select'
-// import { FaceCapturePage } from './pages/face-capture'
-import { SignatoryAddressesPage } from './pages/signatory-addresses'
-import { VerificationSuccessPage } from './pages/verification-success'
-import { SigningSuccessPage } from './pages/signing-success'
+import Routes from './routes'
 
 const chains = [mainnet]
 const projectId = '1790d0716aba5ac0c6ac1e5a5c8968cd'
@@ -40,18 +33,7 @@ function App() {
       <Notifications />
 
       <WagmiConfig config={wagmiConfig}>
-        <BrowserRouter>
-          <Routes>
-            <Route element={<Layout />}>
-              <Route path='/' element={<ConnectPage />} />
-              <Route path='/document-select' element={<DocumentSelectPage />} />
-              {/* <Route path='/face-capture' element={<FaceCapturePage />} /> */}
-              <Route path='/signatory-addresses' element={<SignatoryAddressesPage />} />
-              <Route path='/signing-success' element={<SigningSuccessPage />} />
-              <Route path='/verification-success' element={<VerificationSuccessPage />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
+        <Routes />
       </WagmiConfig>
 
       <Web3Modal
@@ -65,26 +47,6 @@ function App() {
         }}
       />
     </MantineProvider>
-  )
-}
-
-function Layout() {
-  const location = useLocation()
-  const { isConnected } = useAccount()
-
-  if (location.pathname !== '/' && !isConnected) {
-    return <Navigate to='/' />
-  }
-
-  if (location.pathname === '/' && isConnected) {
-    return <Navigate to='/document-select' />
-  }
-
-  return (
-    <Stack w='100%' maw='1200px' mih='100vh' mx='auto' px='xs' spacing={0}>
-      <Bar />
-      <Outlet />
-    </Stack>
   )
 }
 
