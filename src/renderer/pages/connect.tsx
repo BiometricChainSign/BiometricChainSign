@@ -20,7 +20,7 @@ export function ConnectPage() {
               console.log(error)
             })
 
-          // open()
+          open()
         }}
         leftIcon={<IconCurrencyEthereum stroke='1' />}
       >

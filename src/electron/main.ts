@@ -31,11 +31,11 @@ const createWindow = () => {
   // Open the DevTools.
   mainWindow.webContents.openDevTools()
 
-  mainWindow.webContents.on('did-finish-load', () => {
-    mainWindow.webContents.executeJavaScript(`
-      const stream = navigator.mediaDevices.getUserMedia({ video: true });
-    `)
-  })
+  // mainWindow.webContents.on('did-finish-load', () => {
+  //   mainWindow.webContents.executeJavaScript(`
+  //     const stream = navigator.mediaDevices.getUserMedia({ video: true });
+  //   `)
+  // })
 }
 
 // This method will be called when Electron has finished

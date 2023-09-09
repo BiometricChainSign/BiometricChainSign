@@ -12,7 +12,7 @@ import { mainnet } from 'wagmi/chains'
 import { Bar } from './components/bar'
 import { ConnectPage } from './pages/connect'
 import { DocumentSelectPage } from './pages/document-select'
-import { FaceCapturePage } from './pages/face-capture'
+// import { FaceCapturePage } from './pages/face-capture'
 import { SignatoryAddressesPage } from './pages/signatory-addresses'
 import { VerificationSuccessPage } from './pages/verification-success'
 import { SigningSuccessPage } from './pages/signing-success'
@@ -45,7 +45,7 @@ function App() {
             <Route element={<Layout />}>
               <Route path='/' element={<ConnectPage />} />
               <Route path='/document-select' element={<DocumentSelectPage />} />
-              <Route path='/face-capture' element={<FaceCapturePage />} />
+              {/* <Route path='/face-capture' element={<FaceCapturePage />} /> */}
               <Route path='/signatory-addresses' element={<SignatoryAddressesPage />} />
               <Route path='/signing-success' element={<SigningSuccessPage />} />
               <Route path='/verification-success' element={<VerificationSuccessPage />} />
