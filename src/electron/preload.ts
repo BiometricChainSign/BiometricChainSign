@@ -1,9 +1,17 @@
-// See the Electron documentation for details on how to use preload scripts:
-// https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
+export async function runPythonScript<T>(argv: string[]): Promise<T> {
+  const output = (await new Promise(resolve => {
+    ipcRenderer.once('pythonScript', (event, args) => {
+      resolve(args)
+    })
 
-import { contextBridge } from 'electron'
+    ipcRenderer.send('pythonScript', argv)
+  })) as Promise<T> | Error
+  if (output instanceof Error) throw new Error(output.message)
 
-import { runPythonScript } from './utils/python'
+  return output
+}
+
+import { ipcRenderer, contextBridge } from 'electron'
 
 contextBridge.exposeInMainWorld('electron', {
   runPythonScript,
