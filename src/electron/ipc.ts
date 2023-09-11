@@ -7,17 +7,17 @@ const pythonDir = join(__dirname, 'python') // Path of python script folder
 function getPythonInterpreterPath(): Promise<string> {
   return new Promise((resolve, reject) => {
     exec('python -c "import sys; print(sys.executable)"', (error, stdout, stderr) => {
-      if (error) {
+      if (error || stderr) {
         exec('python3 -c "import sys; print(sys.executable)"', (error, stdout, stderr) => {
-          if (error) {
-            return reject(error)
+          if (error || stderr) {
+            reject(error)
           }
-
+          
           return resolve(stdout.trim())
         })
+      } else {
+        return resolve(stdout.trim())
       }
-
-      return resolve(stdout.trim())
     })
   })
 }
@@ -27,8 +27,7 @@ function cleanWarning(error: string) {
 }
 
 const callPython = async (scriptName: string, argv: string[] = []) => {
-  // const python = await getPythonInterpreterPath()
-  const python = 'python3'
+  const python = await getPythonInterpreterPath()
 
   return new Promise(function (resolve, reject) {
     const script = join(pythonDir, scriptName)
