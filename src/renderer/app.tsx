@@ -6,11 +6,11 @@ import { Notifications } from '@mantine/notifications'
 import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum'
 import { configureChains, createConfig, WagmiConfig } from 'wagmi'
 import { Web3Modal } from '@web3modal/react'
-import { mainnet } from 'wagmi/chains'
+import { mainnet, sepolia } from 'wagmi/chains'
 
 import Routes from './routes'
 
-const chains = [mainnet]
+const chains = [process.env.NODE_ENV === 'production' ? mainnet : sepolia]
 const projectId = '1790d0716aba5ac0c6ac1e5a5c8968cd'
 
 const { publicClient } = configureChains(chains, [w3mProvider({ projectId })])
@@ -39,6 +39,7 @@ function App() {
       <Web3Modal
         projectId={projectId}
         ethereumClient={ethereumClient}
+        defaultChain={sepolia}
         themeMode='light'
         themeVariables={{
           '--w3m-font-family': 'Open Sans Variable, sans-serif',

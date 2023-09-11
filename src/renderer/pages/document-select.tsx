@@ -10,25 +10,37 @@ import {
 } from '@mantine/dropzone'
 import { IconFile, IconUpload, IconX } from '@tabler/icons-react'
 import { useNavigate } from 'react-router-dom'
+import { useAccount } from 'wagmi'
+
+import { useGetDocumentSignatories } from '../wagmi-hooks'
 
 export default function DocumentSelectPage() {
   const theme = useMantineTheme()
   const navigate = useNavigate()
+  const { address } = useAccount()
+
+  const { isFetching, refetch: getDocumentSignatories } = useGetDocumentSignatories({
+    args: ['stest'],
+    enabled: false,
+  })
 
   async function onDrop(files: FileWithPath[]) {
-    const file = files[0]!
+    const signatories = (await getDocumentSignatories()).data
 
+    if (!signatories) return
+
+    if (signatories.includes(address!)) {
+      // User has already signed this document
+      navigate('/signatory-addresses')
+      return
+    }
+
+    // User hasn't signed this document yet
+    const file = files[0]!
     const hash = await crypto.subtle.digest('SHA-256', await file.arrayBuffer())
     const hashArray = Array.from(new Uint8Array(hash))
     const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('')
-
-    console.log(hashHex)
-
-    if (Math.round(Math.random())) {
-      navigate('/face-capture', { state: { action: 'sign' } })
-    } else {
-      navigate('/signatory-addresses')
-    }
+    navigate('/face-capture', { state: { action: 'sign' } })
   }
 
   return (
@@ -48,6 +60,7 @@ export default function DocumentSelectPage() {
         w='100%'
         maw={700}
         style={{ borderRadius: theme.radius.md }}
+        loading={isFetching}
       >
         <Group position='center' spacing='xl' style={{ minHeight: rem(220), pointerEvents: 'none' }}>
           <Dropzone.Accept>
