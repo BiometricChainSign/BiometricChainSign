@@ -1,13 +1,36 @@
 import { ActionIcon, AspectRatio, Box, Button, Loader, Stack, Title, useMantineTheme } from '@mantine/core'
-import { IconCamera, IconX } from '@tabler/icons-react'
+import { IconCamera, IconCheck, IconX } from '@tabler/icons-react'
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Webcam from 'react-webcam'
 
-import { useSignDocument, write } from '../wagmi-hooks'
+import { write } from '../wagmi-hooks'
 import { notifications } from '@mantine/notifications'
 
 type NavigationState = { action: 'sign' | 'verify'; data: { signDocumentArgs?: [string, string] } } | undefined
+
+const showWaitingConfirmationNotification = () =>
+  notifications.show({
+    id: 'confirmation',
+    title: 'Aguardando confirmação',
+    message: 'Por favor, confirme a transação em sua carteira.',
+    color: 'indigo',
+    loading: true,
+    withBorder: true,
+    autoClose: false,
+    withCloseButton: false,
+  })
+
+const updateToErrorNotification = () =>
+  notifications.update({
+    id: 'confirmation',
+    title: 'Algo deu errado ao confirmar a transação.',
+    message: 'Por favor, tente novamente',
+    color: 'red',
+    icon: <IconX />,
+    withBorder: true,
+    autoClose: 3000,
+  })
 
 export default function FaceCapturePage() {
   const [loading, setLoading] = useState(false)
@@ -16,47 +39,75 @@ export default function FaceCapturePage() {
   const location = useLocation()
   const navigationState = location.state as NavigationState
 
-  const { writeAsync: signDocument } = useSignDocument({ args: navigationState?.data.signDocumentArgs })
-
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ video: true })
   }, [])
 
   async function onCapture() {
-    setLoading(true)
+    const imageSrc = webcamRef.current?.getScreenshot()
+    const { signDocumentArgs } = navigationState?.data || {}
 
-    try {
-      const imageSrc = webcamRef.current?.getScreenshot()
-      const { signDocumentArgs } = navigationState?.data || {}
+    if (navigationState?.action === 'sign' && signDocumentArgs) {
+      setLoading(true)
 
-      if (navigationState?.action === 'sign' && signDocumentArgs) {
-        try {
-          // TODO: temp
-          await write({ functionName: 'setSignatoryCid', args: ['0123456789abcdef'] })
-        } catch (error) {
-          console.log(error)
-        }
+      try {
+        notifications.show({
+          id: 'confirmation',
+          title: 'Aguardando confirmação',
+          message: 'Por favor, confirme a transação em sua carteira.',
+          color: 'indigo',
+          loading: true,
+          withBorder: true,
+          autoClose: false,
+          withCloseButton: false,
+        })
+
+        // TODO: temp
+        await write({ functionName: 'setSignatoryCid', args: ['0123456789abcdef'] })
+
+        notifications.update({
+          id: 'confirmation',
+          title: 'Sucesso',
+          message: 'Transação confirmada!',
+          color: 'indigo',
+          icon: <IconCheck />,
+          loading: true,
+          withBorder: true,
+          autoClose: 3000,
+        })
+      } catch (error) {
+        updateToErrorNotification()
+        console.log(error)
+      }
+
+      try {
+        setTimeout(() => {
+          notifications.show({
+            id: 'confirmation',
+            title: 'Aguardando confirmação',
+            message: 'Por favor, confirme a transação em sua carteira.',
+            color: 'indigo',
+            loading: true,
+            withBorder: true,
+            autoClose: false,
+            withCloseButton: false,
+          })
+        }, 4000)
 
         await write({ functionName: 'signDocument', args: signDocumentArgs })
+        notifications.hide('confirmation')
         navigate('/signing-success')
+      } catch (error) {
+        console.log(error)
+        updateToErrorNotification()
       }
 
-      if (navigationState?.action === 'verify') {
-        navigate('/verification-success')
-      }
-    } catch (error) {
-      console.log(error)
-
-      notifications.show({
-        autoClose: 5000,
-        title: 'Algo deu errado',
-        message: 'Por favor, tente fazer a captura novamente.',
-        color: 'red',
-        icon: <IconX />,
-      })
+      setLoading(false)
     }
 
-    setLoading(false)
+    if (navigationState?.action === 'verify') {
+      navigate('/verification-success')
+    }
   }
 
   const theme = useMantineTheme()
@@ -92,7 +143,13 @@ export default function FaceCapturePage() {
         </Box>
       </AspectRatio>
 
-      <Button onClick={() => navigate('/document-select')} leftIcon={<IconX />} variant='light' color='red'>
+      <Button
+        onClick={() => navigate('/document-select')}
+        disabled={loading}
+        leftIcon={<IconX />}
+        variant='light'
+        color='red'
+      >
         Cancelar
       </Button>
     </Stack>
