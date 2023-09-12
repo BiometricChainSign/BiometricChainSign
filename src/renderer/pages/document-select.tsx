@@ -33,15 +33,20 @@ export default function DocumentSelectPage() {
 
       const signatories = await read({ functionName: 'getDocumentSignatories', args: [hashHex] })
 
-      if (signatories.includes(address!)) {
-        // User has already signed this document
-        navigate('/signatory-addresses', { state: { data: { addresses: signatories } } })
+      if (!signatories.length) {
+        // Document hasn't been signed yet
+        navigate('/face-capture', {
+          state: { action: 'sign', data: { signDocumentArgs: [hashHex, hashHex + Math.round(Math.random() * 1000)] } },
+        })
+
         return
       }
 
-      // User hasn't signed this document yet
-      navigate('/face-capture', {
-        state: { action: 'sign', data: { signDocumentArgs: [hashHex, hashHex + Math.round(Math.random() * 1000)] } },
+      // Someone has already signed this document
+      navigate('/signatory-addresses', {
+        state: {
+          data: { documentHash: hashHex, addresses: signatories, userIsSignatory: signatories.includes(address!) },
+        },
       })
     } catch (error) {
       console.log(error)
