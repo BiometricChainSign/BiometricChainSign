@@ -8,6 +8,19 @@ import {
 } from 'wagmi'
 import { ReadContractResult, WriteContractMode, PrepareWriteContractResult } from 'wagmi/actions'
 
+import {
+  getContract,
+  GetContractArgs,
+  readContract,
+  ReadContractConfig,
+  writeContract,
+  WriteContractArgs,
+  WriteContractPreparedArgs,
+  WriteContractUnpreparedArgs,
+  prepareWriteContract,
+  PrepareWriteContractConfig,
+} from 'wagmi/actions'
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -264,4 +277,50 @@ export function usePrepareSignDocument(
     functionName: 'signDocument',
     ...config,
   } as UsePrepareContractWriteConfig<typeof ABI, 'signDocument'>)
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Core
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Wraps __{@link getContract}__ with `abi` set to __{@link ABI}__.
+ */
+export function get(config: Omit<GetContractArgs, 'abi' | 'address'>) {
+  return getContract({ abi: ABI, address: Address, ...config })
+}
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link ABI}__.
+ */
+export function read<TAbi extends readonly unknown[] = typeof ABI, TFunctionName extends string = string>(
+  config: Omit<ReadContractConfig<TAbi, TFunctionName>, 'abi' | 'address'>
+) {
+  return readContract({ abi: ABI, address: Address, ...config } as unknown as ReadContractConfig<TAbi, TFunctionName>)
+}
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link ABI}__.
+ */
+export function write<TFunctionName extends string>(
+  config:
+    | Omit<WriteContractPreparedArgs<typeof ABI, TFunctionName>, 'abi' | 'address'>
+    | Omit<WriteContractUnpreparedArgs<typeof ABI, TFunctionName>, 'abi' | 'address'>
+) {
+  return writeContract({ abi: ABI, address: Address, ...config } as unknown as WriteContractArgs<
+    typeof ABI,
+    TFunctionName
+  >)
+}
+
+/**
+ * Wraps __{@link prepareWriteContract}__ with `abi` set to __{@link ABI}__.
+ */
+export function prepareWrite<TAbi extends readonly unknown[] = typeof ABI, TFunctionName extends string = string>(
+  config: Omit<PrepareWriteContractConfig<TAbi, TFunctionName>, 'abi' | 'address'>
+) {
+  return prepareWriteContract({ abi: ABI, address: Address, ...config } as unknown as PrepareWriteContractConfig<
+    TAbi,
+    TFunctionName
+  >)
 }
