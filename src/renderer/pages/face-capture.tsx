@@ -1,32 +1,62 @@
 import { ActionIcon, AspectRatio, Box, Button, Loader, Stack, Title, useMantineTheme } from '@mantine/core'
 import { IconCamera, IconX } from '@tabler/icons-react'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Webcam from 'react-webcam'
 
-type NavigationState = { action: 'sign' | 'verify' } | undefined
+import { useSignDocument, write } from '../wagmi-hooks'
+import { notifications } from '@mantine/notifications'
+
+type NavigationState = { action: 'sign' | 'verify'; data: { signDocumentArgs?: [string, string] } } | undefined
 
 export default function FaceCapturePage() {
+  const [loading, setLoading] = useState(false)
   const webcamRef = useRef<Webcam>(null)
   const navigate = useNavigate()
   const location = useLocation()
   const navigationState = location.state as NavigationState
 
+  const { writeAsync: signDocument } = useSignDocument({ args: navigationState?.data.signDocumentArgs })
+
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ video: true })
   }, [])
 
-  function capture() {
-    const imageSrc = webcamRef.current?.getScreenshot()
-    console.log(imageSrc)
+  async function onCapture() {
+    setLoading(true)
 
-    if (navigationState?.action === 'sign') {
-      navigate('/signing-success')
+    try {
+      const imageSrc = webcamRef.current?.getScreenshot()
+      const { signDocumentArgs } = navigationState?.data || {}
+
+      if (navigationState?.action === 'sign' && signDocumentArgs) {
+        try {
+          // TODO: temp
+          await write({ functionName: 'setSignatoryCid', args: ['0123456789abcdef'] })
+        } catch (error) {
+          console.log(error)
+        }
+
+        await write({ functionName: 'signDocument', args: signDocumentArgs })
+        navigate('/signing-success')
+      }
+
+      if (navigationState?.action === 'verify') {
+        navigate('/verification-success')
+      }
+    } catch (error) {
+      console.log(error)
+
+      notifications.show({
+        autoClose: 5000,
+        title: 'Algo deu errado',
+        message: 'Por favor, tente fazer a captura novamente.',
+        color: 'red',
+        icon: <IconX />,
+      })
     }
 
-    if (navigationState?.action === 'verify') {
-      navigate('/verification-success')
-    }
+    setLoading(false)
   }
 
   const theme = useMantineTheme()
@@ -50,7 +80,8 @@ export default function FaceCapturePage() {
           <Loader m='auto' />
 
           <ActionIcon
-            onClick={capture}
+            onClick={onCapture}
+            loading={loading}
             size='xl'
             color='indigo'
             variant='filled'

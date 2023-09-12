@@ -12,35 +12,50 @@ import { IconFile, IconUpload, IconX } from '@tabler/icons-react'
 import { useNavigate } from 'react-router-dom'
 import { useAccount } from 'wagmi'
 
-import { useGetDocumentSignatories } from '../wagmi-hooks'
+import { read } from '../wagmi-hooks'
+import { useState } from 'react'
+import { notifications } from '@mantine/notifications'
 
 export default function DocumentSelectPage() {
   const theme = useMantineTheme()
   const navigate = useNavigate()
   const { address } = useAccount()
-
-  const { isFetching, refetch: getDocumentSignatories } = useGetDocumentSignatories({
-    args: ['stest'],
-    enabled: false,
-  })
+  const [loading, setLoading] = useState(false)
 
   async function onDrop(files: FileWithPath[]) {
-    const signatories = (await getDocumentSignatories()).data
+    try {
+      setLoading(true)
 
-    if (!signatories) return
+      const file = files[0]!
+      const hash = await crypto.subtle.digest('SHA-256', await file.arrayBuffer())
+      const hashArray = Array.from(new Uint8Array(hash))
+      const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('')
 
-    if (signatories.includes(address!)) {
-      // User has already signed this document
-      navigate('/signatory-addresses')
-      return
+      const signatories = await read({ functionName: 'getDocumentSignatories', args: [hashHex] })
+
+      if (signatories.includes(address!)) {
+        // User has already signed this document
+        navigate('/signatory-addresses')
+        return
+      }
+
+      // User hasn't signed this document yet
+      navigate('/face-capture', {
+        state: { action: 'sign', data: { signDocumentArgs: [hashHex, hashHex + Math.round(Math.random() * 1000)] } },
+      })
+    } catch (error) {
+      console.log(error)
+
+      notifications.show({
+        autoClose: 5000,
+        title: 'Algo deu errado',
+        message: 'Por favor, tente novamente.',
+        color: 'red',
+        icon: <IconX />,
+      })
     }
 
-    // User hasn't signed this document yet
-    const file = files[0]!
-    const hash = await crypto.subtle.digest('SHA-256', await file.arrayBuffer())
-    const hashArray = Array.from(new Uint8Array(hash))
-    const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('')
-    navigate('/face-capture', { state: { action: 'sign' } })
+    setLoading(false)
   }
 
   return (
@@ -60,7 +75,7 @@ export default function DocumentSelectPage() {
         w='100%'
         maw={700}
         style={{ borderRadius: theme.radius.md }}
-        loading={isFetching}
+        loading={loading}
       >
         <Group position='center' spacing='xl' style={{ minHeight: rem(220), pointerEvents: 'none' }}>
           <Dropzone.Accept>
