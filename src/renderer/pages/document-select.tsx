@@ -35,7 +35,7 @@ export default function DocumentSelectPage() {
 
       if (signatories.includes(address!)) {
         // User has already signed this document
-        navigate('/signatory-addresses')
+        navigate('/signatory-addresses', { state: { data: { addresses: signatories } } })
         return
       }
 

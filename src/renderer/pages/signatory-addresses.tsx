@@ -1,10 +1,14 @@
 import { Button, Code, Group, Stack, Text, Title, useMantineTheme } from '@mantine/core'
 import { IconCheck, IconFaceId, IconFileCheck } from '@tabler/icons-react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
+
+type NavigationState = { data: { addresses: string[] } } | undefined
 
 export default function SignatoryAddressesPage() {
   const navigate = useNavigate()
   const theme = useMantineTheme()
+  const location = useLocation()
+  const navigationState = location.state as NavigationState
 
   return (
     <Stack justify='center' align='center' spacing='xl' style={{ flexGrow: 1 }}>
@@ -15,9 +19,9 @@ export default function SignatoryAddressesPage() {
       </Stack>
 
       <Stack spacing='xs'>
-        <Code style={{ fontSize: theme.fontSizes.lg }}>0x000000000000000000000000000000</Code>
-        <Code style={{ fontSize: theme.fontSizes.lg }}>0x000000000000000000000000000000</Code>
-        <Code style={{ fontSize: theme.fontSizes.lg }}>0x000000000000000000000000000000</Code>
+        {navigationState?.data.addresses.map(address => (
+          <Code style={{ fontSize: theme.fontSizes.lg }}>{address}</Code>
+        ))}
       </Stack>
 
       <Group>
