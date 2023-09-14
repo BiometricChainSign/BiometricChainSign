@@ -1,4 +1,4 @@
-export async function runPythonScript<T>(argv: string[]): Promise<T> {
+export async function runPythonScript<T>(argv: { [key: string]: unknown }): Promise<T> {
   const result = (await new Promise(resolve => {
     ipcRenderer.once('pythonScript', (event, args) => {
       resolve(args)

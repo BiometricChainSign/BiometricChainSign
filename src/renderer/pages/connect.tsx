@@ -12,7 +12,7 @@ export default function ConnectPage() {
       <Button
         onClick={() => {
           window.electron
-            .runPythonScript<string>(['a', 'b'])
+            .runPythonScript<string>({ path: 'teste' })
             .then(output => {
               console.log(output)
             })
