@@ -26,7 +26,16 @@ const ethereumClient = new EthereumClient(wagmiConfig, chains)
 function App() {
   return (
     <MantineProvider
-      theme={{ fontFamily: 'Open Sans Variable, sans-serif', primaryColor: 'indigo' }}
+      theme={{
+        fontFamily: 'Open Sans Variable, sans-serif',
+        primaryColor: 'indigo',
+        globalStyles: theme => ({
+          body: {
+            minHeight: '100vh',
+            background: theme.colors.gray[0],
+          },
+        }),
+      }}
       withGlobalStyles
       withNormalizeCSS
     >
