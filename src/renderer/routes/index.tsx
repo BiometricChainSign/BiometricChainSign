@@ -11,6 +11,7 @@ import FaceCapturePage from '../pages/face-capture'
 import SignatoryAddressesPage from '../pages/signatory-addresses'
 import VerificationSuccessPage from '../pages/verification-success'
 import SigningSuccessPage from '../pages/signing-success'
+import PdfStampAddPage from '../pages/pdf-stamp-add'
 
 function Layout() {
   const location = useLocation()
@@ -40,6 +41,7 @@ export default function Routes() {
           <Route path='/' element={<ConnectPage />} />
           <Route path='/document-select' element={<DocumentSelectPage />} />
           <Route path='/face-capture' element={<FaceCapturePage />} />
+          <Route path='/pdf-stamp-add' element={<PdfStampAddPage />} />
           <Route path='/signatory-addresses' element={<SignatoryAddressesPage />} />
           <Route path='/signing-success' element={<SigningSuccessPage />} />
           <Route path='/verification-success' element={<VerificationSuccessPage />} />

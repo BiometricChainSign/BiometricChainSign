@@ -35,9 +35,11 @@ export default function DocumentSelectPage() {
 
       if (!signatories.length) {
         // Document hasn't been signed yet
-        navigate('/face-capture', {
-          state: { action: 'sign', data: { signDocumentArgs: [hashHex, hashHex + Math.round(Math.random() * 1000)] } },
-        })
+        // navigate('/face-capture', {
+        //   state: { action: 'sign', data: { signDocumentArgs: [hashHex, hashHex + Math.round(Math.random() * 1000)] } },
+        // })
+
+        navigate('/pdf-stamp-add', { state: { data: { pdfFile: file } } })
 
         return
       }
