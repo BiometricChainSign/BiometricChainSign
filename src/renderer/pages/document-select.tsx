@@ -65,13 +65,7 @@ export default function DocumentSelectPage() {
 
       <Dropzone
         onDrop={onDrop}
-        accept={[
-          ...PDF_MIME_TYPE,
-          ...IMAGE_MIME_TYPE,
-          ...MS_WORD_MIME_TYPE,
-          ...MS_EXCEL_MIME_TYPE,
-          ...MS_POWERPOINT_MIME_TYPE,
-        ]}
+        accept={PDF_MIME_TYPE}
         maxFiles={1}
         w='100%'
         maw={700}
@@ -95,7 +89,7 @@ export default function DocumentSelectPage() {
 
           <div>
             <Text size='xl' inline>
-              Arraste um documento aqui
+              Arraste um documento PDF aqui
             </Text>
             <Text size='sm' color='dimmed' inline mt={7}>
               ou clique para selecionar
