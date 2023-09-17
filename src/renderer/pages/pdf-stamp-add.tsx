@@ -167,7 +167,11 @@ function PdfStampAddPage() {
                 <IconArrowRight />
               </ActionIcon>
 
-              <Button onClick={signPdf} loading={loading} leftIcon={<IconSignature />} size='md'>
+              <Button onClick={() => navigate('/document-select')} leftIcon={<IconX />} variant='light' color='red'>
+                Cancelar
+              </Button>
+
+              <Button onClick={signPdf} loading={loading} leftIcon={<IconSignature />}>
                 Assinar
               </Button>
             </Group>
