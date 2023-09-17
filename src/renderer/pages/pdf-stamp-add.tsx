@@ -21,8 +21,8 @@ const useStyles = createStyles(theme => ({
   documentWrapper: {
     margin: '0 auto',
     marginBottom: 140,
-    border: `4px solid ${theme.colors.indigo[1]}`,
     alignSelf: 'baseline',
+    boxShadow: theme.shadows.xs,
   },
   document: {
     position: 'relative',
@@ -32,7 +32,7 @@ const useStyles = createStyles(theme => ({
   },
   bottomBar: {
     borderRadius: theme.radius.md,
-    boxShadow: theme.shadows.xl,
+    boxShadow: theme.shadows.xs,
   },
 }))
 

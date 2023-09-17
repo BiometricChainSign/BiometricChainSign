@@ -29,13 +29,6 @@ function App() {
       theme={{
         fontFamily: 'Open Sans Variable, sans-serif',
         primaryColor: 'indigo',
-        components: {
-          Button: {
-            defaultProps: {
-              size: 'md',
-            },
-          },
-        },
         globalStyles: theme => ({
           body: {
             minHeight: '100vh',
