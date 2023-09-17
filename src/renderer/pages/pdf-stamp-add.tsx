@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { ActionIcon, Button, Flex, Group, Stack, Title, Transition, createStyles } from '@mantine/core'
 import { IconArrowLeft, IconArrowRight, IconSignature, IconX } from '@tabler/icons-react'
@@ -44,6 +44,7 @@ function PdfStampAddPage() {
   const stampSvgRef = useRef<SVGSVGElement | null>(null)
   const [pageCount, setPageCount] = useState<number | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
+  const [currentPageSize, setCurrentPageSize] = useState({ width: 0, height: 0 })
   const [loading, setLoading] = useState(false)
 
   const [stampSize, setStampSize] = useState<{ width: number; height: number }>({
@@ -70,6 +71,19 @@ function PdfStampAddPage() {
 
     return `${day}/${month}/${year} ${hour}:${minutes} UTC ${tz}`
   }, [])
+
+  useEffect(() => {
+    ;(async () => {
+      // get page size
+      const existingPdfBytes = await pdfFile!.arrayBuffer()
+      const pdfDoc = await PDFDocument.load(existingPdfBytes)
+      const page = pdfDoc.getPage(currentPage - 1)
+
+      // set stamp position and height
+      setStampSize({ width: 180, height: 60 })
+      setStampPosition({ x: (page.getWidth() * 1.4 - 180) / 2, y: 60 })
+    })()
+  }, [currentPage])
 
   function onPdfLoadSuccess({ numPages }: { numPages: number }) {
     setPageCount(numPages)
@@ -196,6 +210,7 @@ function PdfStampAddPage() {
               lockAspectRatio
               disableDragging={loading}
               enableResizing={!loading}
+              minWidth={100}
               className={classes.rnd}
             >
               <Stamp
