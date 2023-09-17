@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Group, Stack, Text, Title, rem, useMantineTheme } from '@mantine/core'
 import {
   Dropzone,
@@ -9,12 +10,12 @@ import {
   FileWithPath,
 } from '@mantine/dropzone'
 import { IconFile, IconUpload, IconX } from '@tabler/icons-react'
+import { notifications } from '@mantine/notifications'
 import { useNavigate } from 'react-router-dom'
 import { useAccount } from 'wagmi'
 
 import { read } from '../wagmi-hooks'
-import { useState } from 'react'
-import { notifications } from '@mantine/notifications'
+import { getFileHash } from '../helpers'
 
 export default function DocumentSelectPage() {
   const theme = useMantineTheme()
@@ -27,27 +28,20 @@ export default function DocumentSelectPage() {
       setLoading(true)
 
       const file = files[0]!
-      const hash = await crypto.subtle.digest('SHA-256', await file.arrayBuffer())
-      const hashArray = Array.from(new Uint8Array(hash))
-      const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('')
+      const documentHash = await getFileHash(await file.arrayBuffer())
 
-      const signatories = await read({ functionName: 'getDocumentSignatories', args: [hashHex] })
+      const signatories = await read({ functionName: 'getDocumentSignatories', args: [documentHash] })
 
       if (!signatories.length) {
         // Document hasn't been signed yet
-        // navigate('/face-capture', {
-        //   state: { action: 'sign', data: { signDocumentArgs: [hashHex, hashHex + Math.round(Math.random() * 1000)] } },
-        // })
-
-        navigate('/pdf-stamp-add', { state: { data: { pdfFile: file } } })
-
+        navigate('/face-capture', { state: { action: 'sign', data: { pdfFile: file } } })
         return
       }
 
       // Someone has already signed this document
       navigate('/signatory-addresses', {
         state: {
-          data: { documentHash: hashHex, addresses: signatories, userIsSignatory: signatories.includes(address!) },
+          data: { documentHash: documentHash, addresses: signatories, userIsSignatory: signatories.includes(address!) },
         },
       })
     } catch (error) {

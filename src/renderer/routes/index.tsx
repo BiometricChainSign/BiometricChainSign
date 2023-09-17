@@ -26,7 +26,7 @@ function Layout() {
   }
 
   return (
-    <Stack w='100%' maw='1200px' mih='100vh' mx='auto' px='xs' spacing={0}>
+    <Stack w='100%' maw='1200px' mih='100vh' mx='auto' px='xs' spacing='lg'>
       <Bar />
       <Outlet />
     </Stack>

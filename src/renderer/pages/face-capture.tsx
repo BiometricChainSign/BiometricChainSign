@@ -1,13 +1,13 @@
-import { ActionIcon, AspectRatio, Box, Button, Loader, Stack, Title, useMantineTheme } from '@mantine/core'
-import { IconCamera, IconCheck, IconX } from '@tabler/icons-react'
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { ActionIcon, AspectRatio, Box, Button, Loader, Stack, Title, useMantineTheme } from '@mantine/core'
+import { notifications } from '@mantine/notifications'
+import { IconCamera, IconCheck, IconX } from '@tabler/icons-react'
 import Webcam from 'react-webcam'
 
 import { write } from '../wagmi-hooks'
-import { notifications } from '@mantine/notifications'
 
-type NavigationState = { action: 'sign' | 'verify'; data: { signDocumentArgs?: [string, string] } } | undefined
+type NavigationState = { action: 'sign' | 'verify'; data: { pdfFile?: File } } | undefined
 
 const showWaitingConfirmationNotification = () =>
   notifications.show({
@@ -45,9 +45,9 @@ export default function FaceCapturePage() {
 
   async function onCapture() {
     const imageSrc = webcamRef.current?.getScreenshot()
-    const { signDocumentArgs } = navigationState?.data || {}
+    const { pdfFile } = navigationState?.data || {}
 
-    if (navigationState?.action === 'sign' && signDocumentArgs) {
+    if (navigationState?.action === 'sign' && pdfFile) {
       setLoading(true)
 
       try {
@@ -80,34 +80,14 @@ export default function FaceCapturePage() {
         console.log(error)
       }
 
-      try {
-        setTimeout(() => {
-          notifications.show({
-            id: 'confirmation',
-            title: 'Aguardando confirmação',
-            message: 'Por favor, confirme a transação em sua carteira.',
-            color: 'indigo',
-            loading: true,
-            withBorder: true,
-            autoClose: false,
-            withCloseButton: false,
-          })
-        }, 4000)
-
-        await write({ functionName: 'signDocument', args: signDocumentArgs })
-        notifications.hide('confirmation')
-        navigate('/signing-success')
-      } catch (error) {
-        console.log(error)
-        updateToErrorNotification()
-      }
-
-      setLoading(false)
+      navigate('/pdf-stamp-add', { state: { data: { pdfFile } } })
     }
 
     if (navigationState?.action === 'verify') {
       navigate('/verification-success')
     }
+
+    setLoading(false)
   }
 
   const theme = useMantineTheme()

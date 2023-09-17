@@ -1,13 +1,17 @@
 import { useMemo, useRef, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { ActionIcon, Button, Flex, Group, Stack, Title, Transition, createStyles } from '@mantine/core'
+import { IconArrowLeft, IconArrowRight, IconSignature, IconX } from '@tabler/icons-react'
+import { notifications } from '@mantine/notifications'
 import { PDFDocument } from 'pdf-lib'
 import { pdfjs, Document, Page } from 'react-pdf'
 import { Rnd } from 'react-rnd'
 import { Canvg } from 'canvg'
-import Stamp from '../components/stamp'
 import { useAccount } from 'wagmi'
-import { ActionIcon, Button, Flex, Group, Stack, Title, createStyles } from '@mantine/core'
-import { IconArrowLeft, IconArrowRight, IconDeviceFloppy } from '@tabler/icons-react'
+
+import Stamp from '../components/stamp'
+import { getFileHash } from '../helpers'
+import { write } from '../wagmi-hooks'
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`
 
@@ -18,7 +22,6 @@ const useStyles = createStyles(theme => ({
     margin: '0 auto',
     marginBottom: 140,
     border: `4px solid ${theme.colors.indigo[1]}`,
-    // borderRadius: theme.radius.lg,
     alignSelf: 'baseline',
   },
   document: {
@@ -37,9 +40,11 @@ function PdfStampAddPage() {
   const location = useLocation()
   const navigationState = location.state as NavigationState
   const { pdfFile } = navigationState.data
+  const navigate = useNavigate()
   const stampSvgRef = useRef<SVGSVGElement | null>(null)
   const [pageCount, setPageCount] = useState<number | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
+  const [loading, setLoading] = useState(false)
 
   const [stampSize, setStampSize] = useState<{ width: number; height: number }>({
     width: 180,
@@ -70,7 +75,9 @@ function PdfStampAddPage() {
     setPageCount(numPages)
   }
 
-  async function savePdf() {
+  async function signPdf() {
+    setLoading(true)
+
     const width = stampSize.width / 1.4
     const height = stampSize.height / 1.4
     const x = stampPosition.x / 1.4
@@ -99,40 +106,73 @@ function PdfStampAddPage() {
 
     // Serialize the edited PDF and download it
     const editedPdfBytes = await pdfDoc.save()
-    const blob = new Blob([editedPdfBytes], { type: 'application/pdf' })
-    const link = document.createElement('a')
-    link.href = URL.createObjectURL(blob)
-    link.download = pdfFile.name.replace('.pdf', '') + ` - ${address?.slice(0, 12)}.pdf`
-    link.click()
+
+    // Sign document
+    notifications.show({
+      id: 'confirmation',
+      title: 'Aguardando confirmação',
+      message: 'Por favor, confirme a transação em sua carteira.',
+      color: 'indigo',
+      loading: true,
+      withBorder: true,
+      autoClose: false,
+      withCloseButton: false,
+    })
+
+    try {
+      const originalPdfHash = await getFileHash(await pdfFile.arrayBuffer())
+      const stampedPdfHash = await getFileHash(editedPdfBytes.buffer)
+
+      await write({ functionName: 'signDocument', args: [stampedPdfHash, originalPdfHash] })
+      notifications.hide('confirmation')
+      navigate('/signing-success', { state: { data: { pdfBytes: editedPdfBytes, pdfName: pdfFile.name } } })
+    } catch (error) {
+      console.log(error)
+      notifications.update({
+        id: 'confirmation',
+        title: 'Algo deu errado ao confirmar a transação.',
+        message: 'Por favor, tente novamente',
+        color: 'red',
+        icon: <IconX />,
+        withBorder: true,
+        autoClose: 3000,
+      })
+    }
+
+    setLoading(false)
   }
 
   return (
     <>
       <Group w='100%' pos='fixed' bottom={40} left={0} position='center' style={{ zIndex: 3 }}>
-        <Group position='center' px={20} py={10} bg='white' className={classes.bottomBar}>
-          <ActionIcon
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage(currentPage - 1)}
-            color='indigo'
-            size='lg'
-          >
-            <IconArrowLeft />
-          </ActionIcon>
-          {currentPage}
-          <ActionIcon
-            disabled={currentPage === pageCount}
-            onClick={() => setCurrentPage(currentPage + 1)}
-            color='indigo'
-            size='lg'
-            mr='lg'
-          >
-            <IconArrowRight />
-          </ActionIcon>
+        <Transition mounted={!loading} transition='fade' duration={400} timingFunction='ease'>
+          {style => (
+            <Group position='center' px={20} py={10} bg='white' className={classes.bottomBar} style={style}>
+              <ActionIcon
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(currentPage - 1)}
+                color='indigo'
+                size='lg'
+              >
+                <IconArrowLeft />
+              </ActionIcon>
+              {currentPage}
+              <ActionIcon
+                disabled={currentPage === pageCount}
+                onClick={() => setCurrentPage(currentPage + 1)}
+                color='indigo'
+                size='lg'
+                mr='lg'
+              >
+                <IconArrowRight />
+              </ActionIcon>
 
-          <Button onClick={savePdf} leftIcon={<IconDeviceFloppy />} size='md'>
-            Salvar
-          </Button>
-        </Group>
+              <Button onClick={signPdf} loading={loading} leftIcon={<IconSignature />} size='md'>
+                Assinar
+              </Button>
+            </Group>
+          )}
+        </Transition>
       </Group>
 
       <Stack align='center'>
