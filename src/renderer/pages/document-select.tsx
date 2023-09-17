@@ -1,15 +1,8 @@
 import { useState } from 'react'
 import { Group, Stack, Text, Title, rem, useMantineTheme } from '@mantine/core'
-import {
-  Dropzone,
-  PDF_MIME_TYPE,
-  IMAGE_MIME_TYPE,
-  MS_WORD_MIME_TYPE,
-  MS_EXCEL_MIME_TYPE,
-  MS_POWERPOINT_MIME_TYPE,
-  FileWithPath,
-} from '@mantine/dropzone'
+import { Dropzone, PDF_MIME_TYPE, FileWithPath } from '@mantine/dropzone'
 import { IconFile, IconUpload, IconX } from '@tabler/icons-react'
+import { PDFDocument } from 'pdf-lib'
 import { notifications } from '@mantine/notifications'
 import { useNavigate } from 'react-router-dom'
 import { useAccount } from 'wagmi'
@@ -24,12 +17,17 @@ export default function DocumentSelectPage() {
   const [loading, setLoading] = useState(false)
 
   async function onDrop(files: FileWithPath[]) {
+    setLoading(true)
+
     try {
-      setLoading(true)
-
       const file = files[0]!
-      const documentHash = await getFileHash(await file.arrayBuffer())
+      const fileBuffer = await file.arrayBuffer()
 
+      // if the file is corrupted or encrypted, this will throw an exception
+      // firing an error notification
+      await PDFDocument.load(fileBuffer, { ignoreEncryption: false })
+
+      const documentHash = await getFileHash(fileBuffer)
       const signatories = await read({ functionName: 'getDocumentSignatories', args: [documentHash] })
 
       if (!signatories.length) {
@@ -50,7 +48,7 @@ export default function DocumentSelectPage() {
       notifications.show({
         autoClose: 5000,
         title: 'Algo deu errado',
-        message: 'Por favor, tente novamente.',
+        message: 'Verifique se o arquivo não está corrompido ou criptografado.',
         color: 'red',
         icon: <IconX />,
       })
