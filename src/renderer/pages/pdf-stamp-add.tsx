@@ -194,6 +194,8 @@ function PdfStampAddPage() {
               }}
               bounds='parent'
               lockAspectRatio
+              disableDragging={loading}
+              enableResizing={!loading}
               className={classes.rnd}
             >
               <Stamp
