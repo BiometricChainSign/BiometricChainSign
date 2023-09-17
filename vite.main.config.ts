@@ -17,6 +17,10 @@ export default defineConfig({
           src: 'src/electron/python/fisherface.py',
           dest: 'python',
         },
+        {
+          src: 'src/electron/python/classifierFisherface.xml',
+          dest: 'python',
+        },
       ],
     }),
   ],

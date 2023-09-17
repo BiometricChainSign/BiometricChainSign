@@ -1,4 +1,9 @@
-export async function runPythonScript<T>(argv: { [key: string]: unknown }): Promise<T> {
+enum Action {
+  ADD_CLASS = 'ADD_CLASS',
+  TEST_IMG = 'TEST_IMG',
+}
+
+export async function runPythonScript<T>(argv: { action: keyof typeof Action; data: any }): Promise<T> {
   const result = (await new Promise(resolve => {
     ipcRenderer.once('pythonScript', (event, args) => {
       resolve(args)
