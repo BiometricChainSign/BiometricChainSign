@@ -2,14 +2,14 @@ import { Button, Code, Group, Stack, Text, Title, useMantineTheme } from '@manti
 import { IconCheck, IconFaceId, IconFileCheck, IconSignature } from '@tabler/icons-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-type NavigationState = { data: { documentHash: string; addresses: string[]; userIsSignatory: boolean } }
+type NavigationState = { data: { pdfFile: File; addresses: string[]; userIsSignatory: boolean } }
 
 export default function SignatoryAddressesPage() {
   const navigate = useNavigate()
   const theme = useMantineTheme()
   const location = useLocation()
   const {
-    data: { documentHash, addresses, userIsSignatory },
+    data: { pdfFile, addresses, userIsSignatory },
   } = location.state as NavigationState
 
   return (
@@ -46,7 +46,7 @@ export default function SignatoryAddressesPage() {
               navigate('/face-capture', {
                 state: {
                   action: 'sign',
-                  data: { signDocumentArgs: [documentHash, documentHash + Math.round(Math.random() * 1000)] },
+                  data: { pdfFile },
                 },
               })
             }
