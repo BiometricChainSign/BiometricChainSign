@@ -5,10 +5,22 @@ enum Action {
   TEST_IMG = 'TEST_IMG',
 }
 
+type AddClassData = {
+  modelFile: string
+  classPath: string
+}
+
+type Argv = { action: keyof typeof Action; data: AddClassData }
+
 declare global {
   interface Window {
     electron: {
-      runPythonScript: <T>(argv: { action: keyof typeof Action; data: any }) => Promise<T>
+      /**
+       * @example
+       * // data.modelFile person.xml
+       * // data.classPath path to face imgs dataset/new_class/person -> "dataset/new_class/"
+       */
+      runPythonScript: <T>(argv: Argv) => Promise<T>
     }
   }
 }

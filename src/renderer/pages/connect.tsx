@@ -12,7 +12,10 @@ export default function ConnectPage() {
       <Button
         onClick={() => {
           window.electron
-            .runPythonScript<string>({ action: 'ADD_CLASS', data: { path: './imgs' } })
+            .runPythonScript<string>({
+              action: 'ADD_CLASS',
+              data: { modelFile: 'person.xml', classPath: 'dataset/new_class_test' },
+            })
             .then(output => {
               console.log(output)
             })

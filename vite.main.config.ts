@@ -14,12 +14,8 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         {
-          src: 'src/electron/python/fisherface.py',
-          dest: 'python',
-        },
-        {
-          src: 'src/electron/python/classifierFisherface.xml',
-          dest: 'python',
+          src: 'src/electron/python',
+          dest: './',
         },
       ],
     }),

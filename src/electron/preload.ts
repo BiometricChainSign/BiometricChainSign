@@ -3,7 +3,19 @@ enum Action {
   TEST_IMG = 'TEST_IMG',
 }
 
-export async function runPythonScript<T>(argv: { action: keyof typeof Action; data: any }): Promise<T> {
+type AddClassData = {
+  modelFile: string
+  classPath: string
+}
+
+type Argv = { action: keyof typeof Action; data: AddClassData }
+
+/**
+ * @example
+ * // data.modelFile person.xml
+ * // data.classPath path to face imgs dataset/new_class/person -> "dataset/new_class/"
+ */
+export async function runPythonScript<T>(argv: Argv): Promise<T> {
   const result = (await new Promise(resolve => {
     ipcRenderer.once('pythonScript', (event, args) => {
       resolve(args)
