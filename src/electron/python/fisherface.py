@@ -73,12 +73,15 @@ class FisherfaceFaceRecognizer:
         return resized_face
 
     def training_data_setup(
-        self, training_data_path: str = DEFAULT_TRAINING_DATA, label: int = None
+        self, training_data_path: str = DEFAULT_TRAINING_DATA, default_label: int = None
     ) -> None:
         old_len_faces = len(self.faces)
 
+        label = None
         for dir in os.listdir(training_data_path):
-            if label is None:
+            if default_label is not None:
+                label = default_label
+            else:
                 label = dir.split("s")
                 label = int(label[1] if len(label) >= 1 else label[0])
 
@@ -136,7 +139,7 @@ class FisherfaceFaceRecognizer:
 
         self.training_data_setup()
         self.training_data_setup(
-            training_data_path=f"{BASE_PATH}{new_class_path}", label=label
+            training_data_path=f"{BASE_PATH}{new_class_path}", default_label=label
         )
         self.train(file_name=model_file)
         return True
