@@ -7,7 +7,8 @@ import Webcam from 'react-webcam'
 import { useAccount } from 'wagmi'
 import { Buffer } from 'buffer'
 
-import { write } from '../wagmi-hooks'
+import { read, write } from '../wagmi-hooks'
+import { TransactionExecutionError } from 'viem'
 
 type NavigationState = { action: 'sign' | 'verify'; data: { pdfFile?: File } } | undefined
 
@@ -69,63 +70,68 @@ export default function FaceCapturePage() {
     navigator.mediaDevices.getUserMedia({ video: true })
   }, [])
 
-  async function onCapture() {
-    const { pdfFile } = navigationState?.data || {}
+  async function captureFaceImages(amount: number) {
+    // Takes a photo every 200ms
+    // 10 photos in total
+    await new Promise<void>(resolve =>
+      Array.from({ length: amount }).forEach((_, i) => {
+        setTimeout(
+          async () => {
+            const photoBase64 = webcamRef.current?.getScreenshot()!
+            const fileBuffer = Buffer.from(photoBase64.replace(/^data:image\/\w+;base64,/, ''), 'base64')
+            await window.electron.storeFaceImage(address!, `${i + 1}.jpg`, fileBuffer)
+            if (i + 1 === amount) resolve()
+          },
+          200 * (i + 1)
+        )
+      })
+    )
+  }
 
-    if (navigationState?.action === 'sign' && pdfFile) {
+  async function onCapture() {
+    try {
       setLoading(true)
 
-      let cid: string
+      const { pdfFile } = navigationState?.data || {}
 
-      try {
-        // Takes a photo every 200ms
-        // 10 photos in total
-        await new Promise<void>(resolve =>
-          Array.from({ length: 10 }).forEach((_, i) => {
-            setTimeout(
-              async () => {
-                const photoBase64 = webcamRef.current?.getScreenshot()!
-                const fileBuffer = Buffer.from(photoBase64.replace(/^data:image\/\w+;base64,/, ''), 'base64')
-                await window.electron.storeFaceImage(address!, `${i + 1}.jpg`, fileBuffer)
-                if (i === 9) resolve()
-              },
-              200 * (i + 1)
-            )
+      if (navigationState?.action === 'sign' && pdfFile) {
+        let cid = await read({ functionName: 'getSignatoryCid', args: [address!] })
+
+        if (cid) {
+          // TODO: Verify face
+        } else {
+          // Create new model
+          await captureFaceImages(10)
+
+          // TODO: Handle face not detected
+          await window.electron.runPythonScript({
+            action: 'ADD_CLASS',
+            data: {
+              modelFile: `${address}.xml`,
+              classPath: 'dataset/new_class',
+            },
           })
-        )
 
-        await window.electron.runPythonScript({
-          action: 'ADD_CLASS',
-          data: {
-            modelFile: `${address}.xml`,
-            classPath: 'dataset/new_class',
-          },
-        })
+          cid = await window.electron.uploadModelToFilecoin(address!)
 
-        cid = await window.electron.uploadModelToFilecoin(address!)
-      } catch (error) {
+          notifyWaitingConfirmation()
+          await write({ functionName: 'setSignatoryCid', args: [cid] })
+          notifyTransationConfirmed()
+        }
+
+        navigate('/pdf-stamp-add', { state: { data: { pdfFile } } })
+      }
+
+      if (navigationState?.action === 'verify') {
+        navigate('/verification-success')
+      }
+    } catch (error) {
+      if (error instanceof TransactionExecutionError) {
+        notifyTransactionRejected()
+      } else {
         console.error(error)
         notifySomethingWentWrong()
-        setLoading(false)
-        return
       }
-
-      try {
-        notifyWaitingConfirmation()
-        await write({ functionName: 'setSignatoryCid', args: [cid] })
-        notifyTransationConfirmed()
-      } catch (error) {
-        console.error(error)
-        notifyTransactionRejected()
-        setLoading(false)
-        // return
-      }
-
-      navigate('/pdf-stamp-add', { state: { data: { pdfFile } } })
-    }
-
-    if (navigationState?.action === 'verify') {
-      navigate('/verification-success')
     }
 
     setLoading(false)
