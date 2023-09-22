@@ -6,6 +6,9 @@ export default defineConfig({
   root: 'src/renderer',
   build: {
     outDir: resolve(__dirname, 'dist'),
+    rollupOptions: {
+      external: ['path'],
+    },
   },
   plugins: [react()],
 })

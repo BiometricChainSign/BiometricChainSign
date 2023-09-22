@@ -1,7 +1,7 @@
-import './ipc'
 import { app, BrowserWindow } from 'electron'
-
 import { join } from 'path'
+
+import './ipc'
 
 const createWindow = () => {
   const mainWindow = new BrowserWindow({
@@ -9,6 +9,7 @@ const createWindow = () => {
     height: 720,
     webPreferences: {
       preload: join(__dirname, 'preload.js'),
+      nodeIntegration: true,
     },
   })
 

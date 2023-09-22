@@ -21,6 +21,12 @@ declare global {
        * // data.classPath path to face imgs dataset/new_class/person -> "dataset/new_class/"
        */
       runPythonScript: <T>(argv: Argv) => Promise<T>
+
+      storeFaceImage: (address: string, fileName: string, imageFile: Buffer) => Promise<void>
+
+      uploadModelToFilecoin: (address: string) => Promise<string>
+
+      cleanUpNewClass: (address: string) => Promise<void>
     }
   }
 }

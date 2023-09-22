@@ -4,12 +4,14 @@ import { ActionIcon, AspectRatio, Box, Button, Loader, Stack, Title, useMantineT
 import { notifications } from '@mantine/notifications'
 import { IconCamera, IconCheck, IconX } from '@tabler/icons-react'
 import Webcam from 'react-webcam'
+import { useAccount } from 'wagmi'
+import { Buffer } from 'buffer'
 
 import { write } from '../wagmi-hooks'
 
 type NavigationState = { action: 'sign' | 'verify'; data: { pdfFile?: File } } | undefined
 
-const showWaitingConfirmationNotification = () =>
+const notifyWaitingConfirmation = () =>
   notifications.show({
     id: 'confirmation',
     title: 'Aguardando confirmação',
@@ -21,10 +23,33 @@ const showWaitingConfirmationNotification = () =>
     withCloseButton: false,
   })
 
-const updateToErrorNotification = () =>
+const notifyTransationConfirmed = () =>
   notifications.update({
     id: 'confirmation',
-    title: 'Algo deu errado ao confirmar a transação.',
+    title: 'Sucesso',
+    message: 'Transação confirmada!',
+    color: 'indigo',
+    icon: <IconCheck />,
+    loading: true,
+    withBorder: true,
+    autoClose: 3000,
+  })
+
+const notifyTransactionRejected = () =>
+  notifications.update({
+    id: 'confirmation',
+    title: 'Transação rejeitada',
+    message: 'Por favor, tente novamente',
+    color: 'red',
+    icon: <IconX />,
+    withBorder: true,
+    autoClose: 3000,
+  })
+
+const notifySomethingWentWrong = () =>
+  notifications.update({
+    id: 'confirmation',
+    title: 'Algo deu errado',
     message: 'Por favor, tente novamente',
     color: 'red',
     icon: <IconX />,
@@ -38,46 +63,62 @@ export default function FaceCapturePage() {
   const navigate = useNavigate()
   const location = useLocation()
   const navigationState = location.state as NavigationState
+  const { address } = useAccount()
 
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ video: true })
   }, [])
 
   async function onCapture() {
-    const imageSrc = webcamRef.current?.getScreenshot()
     const { pdfFile } = navigationState?.data || {}
 
     if (navigationState?.action === 'sign' && pdfFile) {
       setLoading(true)
 
+      let cid: string
+
       try {
-        notifications.show({
-          id: 'confirmation',
-          title: 'Aguardando confirmação',
-          message: 'Por favor, confirme a transação em sua carteira.',
-          color: 'indigo',
-          loading: true,
-          withBorder: true,
-          autoClose: false,
-          withCloseButton: false,
+        // Takes a photo every 200ms
+        // 10 photos in total
+        await new Promise<void>(resolve =>
+          Array.from({ length: 10 }).forEach((_, i) => {
+            setTimeout(
+              async () => {
+                const photoBase64 = webcamRef.current?.getScreenshot()!
+                const fileBuffer = Buffer.from(photoBase64.replace(/^data:image\/\w+;base64,/, ''), 'base64')
+                await window.electron.storeFaceImage(address!, `${i + 1}.jpg`, fileBuffer)
+                if (i === 9) resolve()
+              },
+              200 * (i + 1)
+            )
+          })
+        )
+
+        await window.electron.runPythonScript({
+          action: 'ADD_CLASS',
+          data: {
+            modelFile: `${address}.xml`,
+            classPath: 'dataset/new_class',
+          },
         })
 
-        // TODO: temp
-        await write({ functionName: 'setSignatoryCid', args: ['0123456789abcdef'] })
-
-        notifications.update({
-          id: 'confirmation',
-          title: 'Sucesso',
-          message: 'Transação confirmada!',
-          color: 'indigo',
-          icon: <IconCheck />,
-          loading: true,
-          withBorder: true,
-          autoClose: 3000,
-        })
+        cid = await window.electron.uploadModelToFilecoin(address!)
       } catch (error) {
-        updateToErrorNotification()
-        console.log(error)
+        console.error(error)
+        notifySomethingWentWrong()
+        setLoading(false)
+        return
+      }
+
+      try {
+        notifyWaitingConfirmation()
+        await write({ functionName: 'setSignatoryCid', args: [cid] })
+        notifyTransationConfirmed()
+      } catch (error) {
+        console.error(error)
+        notifyTransactionRejected()
+        setLoading(false)
+        // return
       }
 
       navigate('/pdf-stamp-add', { state: { data: { pdfFile } } })

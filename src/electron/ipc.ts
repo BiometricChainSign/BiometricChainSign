@@ -1,29 +1,15 @@
 import { ipcMain } from 'electron'
-import { exec, spawn } from 'child_process'
+import { spawn } from 'child_process'
 import { join } from 'path'
+import fs from 'fs/promises'
+import { Web3Storage, getFilesFromPath } from 'web3.storage'
+import 'dotenv/config'
 
+const web3storage = new Web3Storage({ token: process.env.WEB3_STORAGE_API_TOKEN! })
 const pythonDir = join(__dirname, 'python') // Path of python script folder
 
-function getPythonInterpreterPath(): Promise<string> {
-  return new Promise((resolve, reject) => {
-    exec('python -c "import sys; print(sys.executable)"', (error, stdout, stderr) => {
-      if (error || stderr) {
-        exec('python3 -c "import sys; print(sys.executable)"', (error, stdout, stderr) => {
-          if (error || stderr) {
-            reject(error)
-          }
-
-          return resolve(stdout.trim())
-        })
-      } else {
-        return resolve(stdout.trim())
-      }
-    })
-  })
-}
-
-const callPython = async (scriptName: string, argv: { [key: string]: unknown }) => {
-  const python = await getPythonInterpreterPath()
+async function callPython(scriptName: string, argv: { [key: string]: unknown }) {
+  const python = join(pythonDir, '.venv', 'bin', 'python')
 
   return new Promise(function (resolve, reject) {
     const script = join(pythonDir, scriptName)
@@ -60,4 +46,20 @@ ipcMain.on('pythonScript', async (event, argv) => {
   } catch (error) {
     event.reply('pythonScript', error)
   }
+})
+
+ipcMain.handle('storeFaceImage', async (event, address: string, fileName: string, imageFile: Buffer) => {
+  const dirPath = join(pythonDir, 'dataset', 'new_class', address)
+  await fs.mkdir(dirPath, { recursive: true })
+  await fs.writeFile(join(dirPath, fileName), imageFile)
+})
+
+ipcMain.handle('uploadModelToFilecoin', async (event, address: string) => {
+  const files = await getFilesFromPath(join(pythonDir, `${address}.xml`))
+  return web3storage.put(files)
+})
+
+ipcMain.handle('cleanUpNewClass', async (event, address: string) => {
+  const dirPath = join(pythonDir, 'dataset', 'new_class', address)
+  await fs.rm(dirPath, { recursive: true, force: true })
 })
