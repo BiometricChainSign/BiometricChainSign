@@ -152,6 +152,8 @@ export default function FaceCapturePage() {
           notifyWaitingConfirmation()
           await write({ functionName: 'setSignatoryCid', args: [cid] })
           notifyTransationConfirmed()
+
+          await window.electron.cleanUpNewClass(address!)
         }
 
         navigate('/pdf-stamp-add', { state: { data: { pdfFile } } })

@@ -59,7 +59,9 @@ ipcMain.handle('uploadModelToFilecoin', async (event, address: string) => {
   return web3storage.put(files)
 })
 
-ipcMain.handle('cleanUpNewClass', async (event, address: string) => {
-  const dirPath = join(pythonDir, 'dataset', 'new_class', address)
-  await fs.rm(dirPath, { recursive: true, force: true })
+ipcMain.handle('cleanUpClassFiles', async (event, address: string) => {
+  const imagesFolderPath = join(pythonDir, 'dataset', 'new_class', address)
+  const modelFilePath = join(pythonDir, `${address}.xml`)
+  await fs.rm(imagesFolderPath, { recursive: true, force: true })
+  await fs.rm(modelFilePath)
 })
