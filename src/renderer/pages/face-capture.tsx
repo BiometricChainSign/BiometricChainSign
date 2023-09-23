@@ -44,7 +44,18 @@ const notifyTransationConfirmed = () =>
     color: 'indigo',
     icon: <IconCheck />,
     withBorder: true,
-    autoClose: 3000,
+    autoClose: 5000,
+  })
+
+const notifyFaceNotDetected = () =>
+  notifications.show({
+    id: '1',
+    title: 'Não foi possível detectar sua face',
+    message: 'Por favor, tente novamente',
+    color: 'red',
+    icon: <IconX />,
+    withBorder: true,
+    autoClose: 5000,
   })
 
 const notifyTransactionRejected = () =>
@@ -55,7 +66,7 @@ const notifyTransactionRejected = () =>
     color: 'red',
     icon: <IconX />,
     withBorder: true,
-    autoClose: 3000,
+    autoClose: 5000,
   })
 
 const notifySomethingWentWrong = () =>
@@ -66,7 +77,7 @@ const notifySomethingWentWrong = () =>
     color: 'red',
     icon: <IconX />,
     withBorder: true,
-    autoClose: 3000,
+    autoClose: 5000,
   })
 
 export default function FaceCapturePage() {
@@ -121,14 +132,20 @@ export default function FaceCapturePage() {
           // Create new model
           await captureFaceImages(10)
 
-          // TODO: Handle face not detected
-          await window.electron.runPythonScript({
+          const addClassResult = await window.electron.runPythonScript({
             action: 'ADD_CLASS',
             data: {
               modelFile: `${address}.xml`,
               classPath: 'dataset/new_class',
             },
           })
+
+          if (
+            typeof addClassResult === 'string' &&
+            addClassResult.includes('ValueError: No new classes have been added.')
+          ) {
+            throw new Error('FaceNotDetected')
+          }
 
           cid = await window.electron.uploadModelToFilecoin(address!)
 
@@ -146,6 +163,8 @@ export default function FaceCapturePage() {
     } catch (error) {
       if (error instanceof TransactionExecutionError) {
         notifyTransactionRejected()
+      } else if (error instanceof Error && error.message === 'FaceNotDetected') {
+        notifyFaceNotDetected()
       } else {
         console.error(error)
         notifySomethingWentWrong()
