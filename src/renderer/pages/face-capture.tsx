@@ -1,20 +1,32 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { ActionIcon, AspectRatio, Box, Button, Loader, Stack, Title, useMantineTheme } from '@mantine/core'
+import {
+  ActionIcon,
+  AspectRatio,
+  Box,
+  Button,
+  Group,
+  Image,
+  Loader,
+  Stack,
+  Text,
+  Title,
+  useMantineTheme,
+} from '@mantine/core'
 import { notifications } from '@mantine/notifications'
-import { IconCamera, IconCheck, IconX } from '@tabler/icons-react'
+import { IconCamera, IconCheck, IconReload, IconX } from '@tabler/icons-react'
 import Webcam from 'react-webcam'
+import { TransactionExecutionError } from 'viem'
 import { useAccount } from 'wagmi'
 import { Buffer } from 'buffer'
 
 import { read, write } from '../wagmi-hooks'
-import { TransactionExecutionError } from 'viem'
 
 type NavigationState = { action: 'sign' | 'verify'; data: { pdfFile?: File } } | undefined
 
 const notifyWaitingConfirmation = () =>
   notifications.show({
-    id: 'confirmation',
+    id: '1',
     title: 'Aguardando confirmação',
     message: 'Por favor, confirme a transação em sua carteira.',
     color: 'indigo',
@@ -26,19 +38,18 @@ const notifyWaitingConfirmation = () =>
 
 const notifyTransationConfirmed = () =>
   notifications.update({
-    id: 'confirmation',
+    id: '1',
     title: 'Sucesso',
     message: 'Transação confirmada!',
     color: 'indigo',
     icon: <IconCheck />,
-    loading: true,
     withBorder: true,
     autoClose: 3000,
   })
 
 const notifyTransactionRejected = () =>
   notifications.update({
-    id: 'confirmation',
+    id: '1',
     title: 'Transação rejeitada',
     message: 'Por favor, tente novamente',
     color: 'red',
@@ -49,7 +60,7 @@ const notifyTransactionRejected = () =>
 
 const notifySomethingWentWrong = () =>
   notifications.update({
-    id: 'confirmation',
+    id: '1',
     title: 'Algo deu errado',
     message: 'Por favor, tente novamente',
     color: 'red',
@@ -60,6 +71,7 @@ const notifySomethingWentWrong = () =>
 
 export default function FaceCapturePage() {
   const [loading, setLoading] = useState(false)
+  const [lastCapturedPhoto, setLastCapturedPhoto] = useState<string | null>(null)
   const webcamRef = useRef<Webcam>(null)
   const navigate = useNavigate()
   const location = useLocation()
@@ -80,7 +92,11 @@ export default function FaceCapturePage() {
             const photoBase64 = webcamRef.current?.getScreenshot()!
             const fileBuffer = Buffer.from(photoBase64.replace(/^data:image\/\w+;base64,/, ''), 'base64')
             await window.electron.storeFaceImage(address!, `${i + 1}.jpg`, fileBuffer)
-            if (i + 1 === amount) resolve()
+
+            if (i + 1 === amount) {
+              setLastCapturedPhoto(photoBase64)
+              resolve()
+            }
           },
           200 * (i + 1)
         )
@@ -89,6 +105,8 @@ export default function FaceCapturePage() {
   }
 
   async function onCapture() {
+    if (!webcamRef.current?.getScreenshot()) return
+
     try {
       setLoading(true)
 
@@ -134,6 +152,7 @@ export default function FaceCapturePage() {
       }
     }
 
+    setLastCapturedPhoto(null)
     setLoading(false)
   }
 
@@ -141,29 +160,36 @@ export default function FaceCapturePage() {
 
   return (
     <Stack h='100%' justify='center' align='center' style={{ flexGrow: 1 }}>
-      <Title>Captura de face</Title>
+      <Stack spacing='xs' align='center'>
+        <Title>Captura de face</Title>
+        <Text color='dimmed'>Mantenha sua face centralizada e clique no botão para capturar</Text>
+      </Stack>
 
-      <AspectRatio ratio={1} w='100%' maw={600} mx='auto' bg='gray.2' style={{ borderRadius: theme.radius.md }}>
+      <AspectRatio ratio={1} w='100%' maw={400} mx='auto' bg='black' style={{ borderRadius: theme.radius.md }}>
         <Box>
-          <Webcam
-            audio={false}
-            width='100%'
-            height='100%'
-            ref={webcamRef}
-            screenshotFormat='image/jpeg'
-            videoConstraints={{ width: 1000, height: 1000 }}
-            style={{ position: 'absolute', borderRadius: theme.radius.md, zIndex: 2 }}
-          />
+          {!lastCapturedPhoto && <Loader m='auto' />}
 
-          <Loader m='auto' />
+          {!lastCapturedPhoto && (
+            <Webcam
+              audio={false}
+              width='100%'
+              height='100%'
+              ref={webcamRef}
+              screenshotFormat='image/jpeg'
+              videoConstraints={{ width: 1000, height: 1000 }}
+              style={{ position: 'absolute', zIndex: 2, borderRadius: theme.radius.md }}
+            />
+          )}
+
+          {!!lastCapturedPhoto && <Image src={lastCapturedPhoto} style={{ zIndex: 3, opacity: 0.7 }} />}
 
           <ActionIcon
             onClick={onCapture}
             loading={loading}
             size='xl'
-            color='indigo'
             variant='filled'
-            style={{ position: 'absolute', bottom: 20, margin: '0 auto', zIndex: 2 }}
+            color='indigo'
+            style={{ position: 'absolute', bottom: 20, margin: '0 auto', zIndex: 4 }}
           >
             <IconCamera />
           </ActionIcon>

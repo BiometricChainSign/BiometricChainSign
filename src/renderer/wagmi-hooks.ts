@@ -73,7 +73,7 @@ export const ABI = [
   },
 ] as const
 
-export const Address = '0x88E825cD5720991B9aEEdcaa16C2f2ac373B2243' as const
+export const Address = '0xd699C7e4E8Bb3D5175FDFda4bdCB7066d4cB48Cb' as const
 
 export const Config = { address: Address, abi: ABI } as const
 
