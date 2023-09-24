@@ -1,9 +1,12 @@
+import 'dotenv/config'
+
 import { ipcMain } from 'electron'
 import { spawn } from 'child_process'
 import { join } from 'path'
 import fs from 'fs/promises'
+import { createWriteStream } from 'fs'
+import { pipeline } from 'stream/promises'
 import { Web3Storage, getFilesFromPath } from 'web3.storage'
-import 'dotenv/config'
 
 const web3storage = new Web3Storage({ token: process.env.WEB3_STORAGE_API_TOKEN! })
 const pythonDir = join(__dirname, 'python') // Path of python script folder
@@ -59,7 +62,29 @@ ipcMain.handle('uploadModelToFilecoin', async (event, address: string) => {
   return web3storage.put(files)
 })
 
-ipcMain.handle('cleanUpClassFiles', async (event, address: string) => {
+ipcMain.handle('downloadModelFromFilecoin', async (event, cid: string, address: string) => {
+  const res = await web3storage.get(cid)
+  const files = (await res?.files())!
+  const modelFilePath = join(pythonDir, `${address}.xml`)
+  const writer = createWriteStream(modelFilePath)
+  const reader = files[0].stream().getReader()
+
+  async function writeNextChunk() {
+    const { done, value } = await reader.read()
+
+    if (done) {
+      writer.end()
+      return
+    }
+
+    writer.write(Buffer.from(value))
+    return writeNextChunk()
+  }
+
+  await writeNextChunk()
+})
+
+ipcMain.handle('cleanupModelFiles', async (event, address: string) => {
   const imagesFolderPath = join(pythonDir, 'dataset', 'new_class', address)
   const modelFilePath = join(pythonDir, `${address}.xml`)
   await fs.rm(imagesFolderPath, { recursive: true, force: true })

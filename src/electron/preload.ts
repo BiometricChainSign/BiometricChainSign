@@ -36,7 +36,11 @@ async function uploadModelToFilecoin(address: string): Promise<string> {
   return ipcRenderer.invoke('uploadModelToFilecoin', address)
 }
 
-async function cleanUpNewClass(address: string): Promise<void> {
+async function downloadModelFromFilecoin(cid: string, address: string): Promise<string> {
+  return ipcRenderer.invoke('downloadModelFromFilecoin', cid, address)
+}
+
+async function cleanupModelFiles(address: string): Promise<void> {
   await ipcRenderer.invoke('cleanUpNewClass', address)
 }
 
@@ -46,5 +50,6 @@ contextBridge.exposeInMainWorld('electron', {
   runPythonScript,
   storeFaceImage,
   uploadModelToFilecoin,
-  cleanUpNewClass,
+  downloadModelFromFilecoin,
+  cleanupModelFiles,
 })

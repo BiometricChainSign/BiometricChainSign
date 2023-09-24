@@ -127,7 +127,11 @@ export default function FaceCapturePage() {
         let cid = await read({ functionName: 'getSignatoryCid', args: [address!] })
 
         if (cid) {
+          await window.electron.downloadModelFromFilecoin(cid, address!)
+
           // TODO: Verify face
+
+          await window.electron.cleanupModelFiles(address!)
         } else {
           // Create new model
           await captureFaceImages(10)
@@ -153,7 +157,7 @@ export default function FaceCapturePage() {
           await write({ functionName: 'setSignatoryCid', args: [cid] })
           notifyTransationConfirmed()
 
-          await window.electron.cleanUpNewClass(address!)
+          await window.electron.cleanupModelFiles(address!)
         }
 
         navigate('/pdf-stamp-add', { state: { data: { pdfFile } } })

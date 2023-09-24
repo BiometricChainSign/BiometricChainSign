@@ -26,7 +26,9 @@ declare global {
 
       uploadModelToFilecoin: (address: string) => Promise<string>
 
-      cleanUpNewClass: (address: string) => Promise<void>
+      downloadModelFromFilecoin: (cid: string, address: string) => Promise<string>
+
+      cleanupModelFiles: (address: string) => Promise<void>
     }
   }
 }
