@@ -98,7 +98,7 @@ class FisherfaceFaceRecognizer:
                 # if detected_face is None:
                 #     print(f'label: {dir}, image: {pathImage}')
 
-        if old_len_faces == len(self.faces):
+        if old_len_faces == len(self.faces) or len(self.faces) <= (old_len_faces + 7):
             raise ValueError("No new classes have been added.")
 
     def train(self, file_name: str = None) -> None:
@@ -139,7 +139,7 @@ class FisherfaceFaceRecognizer:
 
         self.training_data_setup()
         self.training_data_setup(
-            training_data_path=f"{BASE_PATH}{new_class_path}", default_label=label
+            training_data_path=new_class_path, default_label=label
         )
         self.train(file_name=model_file)
         return True
@@ -162,8 +162,11 @@ if __name__ == "__main__":
     if args["action"] == Action.ADD_CLASS.value:
         recognizer.add_class(
             model_file=f"{BASE_PATH}{args['data']['modelFile']}",
-            new_class_path=args["data"]["classPath"],
+            new_class_path=f"{BASE_PATH}{args['data']['classPath']}",
         )
         print(json.dumps({"result": True}))
     elif args["action"] == Action.TEST_IMG.value:
-        pass
+        recognizer.load_model(f"{BASE_PATH}{args['data']['modelFile']}")
+        label, confidence = recognizer.predict(f"{BASE_PATH}{args['data']['test_image']}")
+        print({'label': label, 'confidence': confidence})
+
