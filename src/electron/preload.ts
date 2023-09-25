@@ -8,7 +8,12 @@ type AddClassData = {
   classPath: string
 }
 
-type Argv = { action: keyof typeof Action; data: AddClassData }
+type TestImgData = {
+  modelFile: string
+  testImagePath: string
+}
+
+type Argv = { action: keyof typeof Action; data: AddClassData | TestImgData }
 
 /**
  * @example
@@ -41,7 +46,7 @@ async function downloadModelFromFilecoin(cid: string, address: string): Promise<
 }
 
 async function cleanupModelFiles(address: string): Promise<void> {
-  await ipcRenderer.invoke('cleanUpNewClass', address)
+  await ipcRenderer.invoke('cleanupModelFiles', address)
 }
 
 import { ipcRenderer, contextBridge } from 'electron'

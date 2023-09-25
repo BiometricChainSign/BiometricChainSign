@@ -10,7 +10,12 @@ type AddClassData = {
   classPath: string
 }
 
-type Argv = { action: keyof typeof Action; data: AddClassData }
+type TestImgData = {
+  modelFile: string
+  testImagePath: string
+}
+
+type Argv = { action: keyof typeof Action; data: AddClassData | TestImgData }
 
 declare global {
   interface Window {
