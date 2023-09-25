@@ -112,16 +112,18 @@ class FisherfaceFaceRecognizer:
         self.trained = True
 
     def predict(
-        self, test_image: cv2.typing.MatLike
+        self, test_image_path: str
     ) -> tuple[int, float] | tuple[None, None]:
         if not self.trained:
             raise ValueError(
                 "The model has not been trained yet. Please train the model first."
             )
 
-        face = self.detect_and_resize_face(test_image)
-        if face is not None:
-            label, confidence = self.model.predict(face)
+        image = cv2.imread(test_image_path)
+        detected_face = self.detect_and_resize_face(image)
+        
+        if detected_face is not None:
+            label, confidence = self.model.predict(detected_face)
             if confidence < 270:
                 return label, confidence
             else:
@@ -167,6 +169,6 @@ if __name__ == "__main__":
         print(json.dumps({"result": True}))
     elif args["action"] == Action.TEST_IMG.value:
         recognizer.load_model(f"{BASE_PATH}{args['data']['modelFile']}")
-        label, confidence = recognizer.predict(f"{BASE_PATH}{args['data']['test_image']}")
+        label, confidence = recognizer.predict(f"{BASE_PATH}{args['data']['testImagePath']}")
         print({'label': label, 'confidence': confidence})
 
