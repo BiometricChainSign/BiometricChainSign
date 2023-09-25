@@ -2,6 +2,7 @@ import cv2
 import os
 from sys import argv
 
+import re
 import json
 from enum import Enum
 from typing import List, TypedDict
@@ -67,7 +68,7 @@ class FisherfaceFaceRecognizer:
             return None
 
         x, y, w, h = detected_faces[0]
-        face_roi = gray_image[y : y + h, x : x + w]
+        face_roi = gray_image[y: y + h, x: x + w]
         resized_face = cv2.resize(face_roi, (resized_width, resized_height))
 
         return resized_face
@@ -108,7 +109,8 @@ class FisherfaceFaceRecognizer:
             )
 
         self.model.train(self.faces, np.array(self.labels))
-        self.model.write(file_name if file_name is not None else DEFAULT_MODEL_FILE)
+        self.model.write(
+            file_name if file_name is not None else DEFAULT_MODEL_FILE)
         self.trained = True
 
     def predict(
@@ -118,10 +120,9 @@ class FisherfaceFaceRecognizer:
             raise ValueError(
                 "The model has not been trained yet. Please train the model first."
             )
-
         image = cv2.imread(test_image_path)
         detected_face = self.detect_and_resize_face(image)
-        
+
         if detected_face is not None:
             label, confidence = self.model.predict(detected_face)
             if confidence < 270:
@@ -163,12 +164,19 @@ if __name__ == "__main__":
 
     if args["action"] == Action.ADD_CLASS.value:
         recognizer.add_class(
-            model_file=f"{BASE_PATH}{args['data']['modelFile']}",
-            new_class_path=f"{BASE_PATH}{args['data']['classPath']}",
+            model_file=os.path.join(
+                BASE_PATH, *re.split(r'[\\/]', args['data']['modelFile'])),
+            new_class_path=os.path.join(
+                BASE_PATH, *re.split(r'[\\/]', args['data']['classPath'])),
         )
+
         print(json.dumps({"result": True}))
     elif args["action"] == Action.TEST_IMG.value:
-        recognizer.load_model(f"{BASE_PATH}{args['data']['modelFile']}")
-        label, confidence = recognizer.predict(f"{BASE_PATH}{args['data']['testImagePath']}")
-        print({'label': label, 'confidence': confidence})
+        recognizer.load_model(os.path.join(
+            BASE_PATH, *re.split(r'[\\/]', args['data']['modelFile'])))
 
+        label, confidence = recognizer.predict(
+            os.path.join(
+                BASE_PATH, *re.split(r'[\\/]', args['data']['testImagePath'])))
+
+        print({'label': label, 'confidence': confidence})
