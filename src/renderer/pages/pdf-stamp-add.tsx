@@ -9,9 +9,9 @@ import { Rnd } from 'react-rnd'
 import { Canvg } from 'canvg'
 import { useAccount } from 'wagmi'
 
-import Stamp from '../components/stamp'
+import { contract } from '../contract'
 import { getFileHash } from '../helpers'
-import { write } from '../wagmi-hooks'
+import Stamp from '../components/stamp'
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`
 
@@ -136,7 +136,7 @@ function PdfStampAddPage() {
       const originalPdfHash = await getFileHash(await pdfFile.arrayBuffer())
       const stampedPdfHash = await getFileHash(editedPdfBytes.buffer)
 
-      await write({ functionName: 'signDocument', args: [stampedPdfHash, originalPdfHash] })
+      await contract.write({ functionName: 'signDocument', args: [stampedPdfHash, originalPdfHash] })
       notifications.hide('confirmation')
       navigate('/signing-success', { state: { data: { pdfBytes: editedPdfBytes, pdfName: pdfFile.name } } })
     } catch (error) {

@@ -9,24 +9,7 @@ export default function ConnectPage() {
     <Stack h='100%' m='auto' justify='center' align='center'>
       <Title>Bem-vindo</Title>
 
-      <Button
-        onClick={() => {
-          window.electron
-            .runPythonScript<string>({
-              action: 'ADD_CLASS',
-              data: { modelFile: 'person.xml', classPath: 'dataset/new_class_test' },
-            })
-            .then(output => {
-              console.log(output)
-            })
-            .catch(error => {
-              console.log(error)
-            })
-
-          open()
-        }}
-        leftIcon={<IconCurrencyEthereum stroke='1' />}
-      >
+      <Button onClick={open} leftIcon={<IconCurrencyEthereum stroke='1' />}>
         Conectar carteira
       </Button>
     </Stack>

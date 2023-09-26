@@ -7,7 +7,7 @@ import { notifications } from '@mantine/notifications'
 import { useNavigate } from 'react-router-dom'
 import { useAccount } from 'wagmi'
 
-import { read } from '../wagmi-hooks'
+import { contract } from '../contract'
 import { getFileHash } from '../helpers'
 
 export default function DocumentSelectPage() {
@@ -28,7 +28,7 @@ export default function DocumentSelectPage() {
       await PDFDocument.load(fileBuffer, { ignoreEncryption: false })
 
       const documentHash = await getFileHash(fileBuffer)
-      const signatories = await read({ functionName: 'getDocumentSignatories', args: [documentHash] })
+      const signatories = await contract.read({ functionName: 'getDocumentSignatories', args: [documentHash] })
 
       if (!signatories.length) {
         // Document hasn't been signed yet

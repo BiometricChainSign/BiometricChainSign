@@ -1,18 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import {
-  ActionIcon,
-  AspectRatio,
-  Box,
-  Button,
-  Group,
-  Image,
-  Loader,
-  Stack,
-  Text,
-  Title,
-  useMantineTheme,
-} from '@mantine/core'
+import { ActionIcon, AspectRatio, Box, Button, Image, Loader, Stack, Text, Title, useMantineTheme } from '@mantine/core'
 import { notifications } from '@mantine/notifications'
 import { IconCamera, IconCheck, IconReload, IconX } from '@tabler/icons-react'
 import Webcam from 'react-webcam'
@@ -20,7 +8,7 @@ import { TransactionExecutionError } from 'viem'
 import { useAccount } from 'wagmi'
 import { Buffer } from 'buffer'
 
-import { read, write } from '../wagmi-hooks'
+import { contract } from '../contract'
 
 type NavigationState = { action: 'sign' | 'verify'; data: { pdfFile?: File } } | undefined
 
@@ -124,7 +112,7 @@ export default function FaceCapturePage() {
       const { pdfFile } = navigationState?.data || {}
 
       if (navigationState?.action === 'sign' && pdfFile) {
-        let cid = await read({ functionName: 'getSignatoryCid', args: [address!] })
+        let cid = await contract.read({ functionName: 'getSignatoryCid', args: [address!] })
 
         if (cid) {
           await window.electron.downloadModelFromFilecoin(cid, address!)
@@ -154,7 +142,7 @@ export default function FaceCapturePage() {
           cid = await window.electron.uploadModelToFilecoin(address!)
 
           notifyWaitingConfirmation()
-          await write({ functionName: 'setSignatoryCid', args: [cid] })
+          await contract.write({ functionName: 'setSignatoryCid', args: [cid] })
           notifyTransationConfirmed()
 
           await window.electron.cleanupModelFiles(address!)
