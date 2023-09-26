@@ -103,6 +103,47 @@ export default function FaceCapturePage() {
     )
   }
 
+  async function addClass() {
+    await captureFaceImages(10)
+
+    const addClassResult = await window.electron.runPythonScript({
+      action: 'ADD_CLASS',
+      data: {
+        modelFile: `${address}.xml`,
+        classPath: 'dataset/new_class',
+      },
+    })
+
+    if (typeof addClassResult === 'string' && addClassResult.includes('ValueError: No new classes have been added.')) {
+      throw new Error('FaceNotDetected')
+    }
+
+    const cid = await window.electron.uploadModelToFilecoin(address!)
+
+    notifyWaitingConfirmation()
+    await contract.write({ functionName: 'setSignatoryCid', args: [cid] })
+    notifyTransationConfirmed()
+
+    await window.electron.cleanupModelFiles(address!)
+  }
+
+  async function testImage(cid: string) {
+    await captureFaceImages(1)
+    await window.electron.downloadModelFromFilecoin(cid, address!)
+
+    const testImgResult = await window.electron.runPythonScript({
+      action: 'TEST_IMG',
+      data: {
+        modelFile: `${address}.xml`,
+        testImagePath: `dataset/new_class/${address}/1.jpg`,
+      },
+    })
+
+    // TODO: Handle face not recognized
+
+    await window.electron.cleanupModelFiles(address!)
+  }
+
   async function onCapture() {
     if (!webcamRef.current?.getScreenshot()) return
 
@@ -110,48 +151,20 @@ export default function FaceCapturePage() {
       setLoading(true)
 
       const { pdfFile } = navigationState?.data || {}
+      const cid = await contract.read({ functionName: 'getSignatoryCid', args: [address!] })
 
       if (navigationState?.action === 'sign' && pdfFile) {
-        let cid = await contract.read({ functionName: 'getSignatoryCid', args: [address!] })
-
         if (cid) {
-          await window.electron.downloadModelFromFilecoin(cid, address!)
-
-          // TODO: Verify face
-
-          await window.electron.cleanupModelFiles(address!)
+          await testImage(cid)
         } else {
-          // Create new model
-          await captureFaceImages(10)
-
-          const addClassResult = await window.electron.runPythonScript({
-            action: 'ADD_CLASS',
-            data: {
-              modelFile: `${address}.xml`,
-              classPath: 'dataset/new_class',
-            },
-          })
-
-          if (
-            typeof addClassResult === 'string' &&
-            addClassResult.includes('ValueError: No new classes have been added.')
-          ) {
-            throw new Error('FaceNotDetected')
-          }
-
-          cid = await window.electron.uploadModelToFilecoin(address!)
-
-          notifyWaitingConfirmation()
-          await contract.write({ functionName: 'setSignatoryCid', args: [cid] })
-          notifyTransationConfirmed()
-
-          await window.electron.cleanupModelFiles(address!)
+          await addClass()
         }
 
         navigate('/pdf-stamp-add', { state: { data: { pdfFile } } })
       }
 
       if (navigationState?.action === 'verify') {
+        await testImage(cid)
         navigate('/verification-success')
       }
     } catch (error) {

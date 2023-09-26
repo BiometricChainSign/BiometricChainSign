@@ -178,5 +178,6 @@ if __name__ == "__main__":
         label, confidence = recognizer.predict(
             os.path.join(
                 BASE_PATH, *re.split(r'[\\/]', args['data']['testImagePath'])))
+                
 
-        print({'label': label, 'confidence': confidence})
+        print(json.dumps({'label': label, 'confidence': confidence}))
