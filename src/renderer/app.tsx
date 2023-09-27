@@ -39,7 +39,7 @@ function App() {
       withGlobalStyles
       withNormalizeCSS
     >
-      <Notifications position='bottom-center' />
+      <Notifications position='top-center' />
 
       <WagmiConfig config={wagmiConfig}>
         <Routes />
