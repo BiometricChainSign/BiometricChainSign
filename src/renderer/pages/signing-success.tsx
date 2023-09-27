@@ -19,7 +19,7 @@ export default function SigningSuccessPage() {
     const blob = new Blob([pdfBytes], { type: 'application/pdf' })
     const link = document.createElement('a')
     link.href = URL.createObjectURL(blob)
-    link.download = pdfName.replace('.pdf', '') + ` - ${address!.slice(0, 12)}.pdf`
+    link.download = pdfName.replace('.pdf', '').replace(/\s-\s0x[0-f]{10}/, '') + ` - ${address!.slice(0, 12)}.pdf`
     link.click()
     setHasSavedDocument(true)
   }
