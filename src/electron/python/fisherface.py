@@ -198,7 +198,7 @@ if __name__ == "__main__":
             cv2.imread(
                 os.path.join(
                     BASE_PATH, *
-                    re.split(r"[\\/]", args["data"]["testImgPath"])
+                    re.split(r"[\\/]", args["data"]["testImagePath"])
                 )
             )
         )

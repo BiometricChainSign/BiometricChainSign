@@ -81,7 +81,7 @@ const notifyTransactionRejected = () =>
   })
 
 const notifySomethingWentWrong = () =>
-  notifications.update({
+  notifications.show({
     id: '1',
     title: 'Algo deu errado',
     message: 'Por favor, tente novamente',

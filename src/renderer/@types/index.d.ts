@@ -29,9 +29,11 @@ declare global {
 
       storeFaceImage: (address: string, fileName: string, imageFile: Buffer) => Promise<void>
 
+      setWeb3StorageToken: (token: string) => Promise<void>
+
       uploadModelToFilecoin: (address: string) => Promise<string>
 
-      downloadModelFromFilecoin: (cid: string, address: string) => Promise<string>
+      downloadModelFromFilecoin: (cid: string, address: string) => Promise<void>
 
       cleanupModelFiles: (address: string) => Promise<void>
     }

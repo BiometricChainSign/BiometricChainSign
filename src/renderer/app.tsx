@@ -1,5 +1,6 @@
 import '@fontsource-variable/open-sans'
 
+import { useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
 import { MantineProvider } from '@mantine/core'
 import { Notifications } from '@mantine/notifications'
@@ -24,6 +25,14 @@ const wagmiConfig = createConfig({
 const ethereumClient = new EthereumClient(wagmiConfig, chains)
 
 function App() {
+  useEffect(() => {
+    const web3StorageToken = localStorage.getItem('web3StorageToken')
+
+    if (web3StorageToken) {
+      window.electron.setWeb3StorageToken(web3StorageToken)
+    }
+  }, [])
+
   return (
     <MantineProvider
       theme={{

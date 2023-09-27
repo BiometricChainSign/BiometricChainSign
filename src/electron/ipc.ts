@@ -5,10 +5,9 @@ import { spawn } from 'child_process'
 import { join } from 'path'
 import fs from 'fs/promises'
 import { createWriteStream } from 'fs'
-import { pipeline } from 'stream/promises'
 import { Web3Storage, getFilesFromPath } from 'web3.storage'
 
-const web3storage = new Web3Storage({ token: process.env.WEB3_STORAGE_API_TOKEN! })
+let web3Storage = new Web3Storage({ token: process.env.WEB3_STORAGE_API_TOKEN! })
 const pythonDir = join(__dirname, 'python') // Path of python script folder
 
 async function callPython(scriptName: string, argv: { [key: string]: unknown }) {
@@ -57,13 +56,17 @@ ipcMain.handle('storeFaceImage', async (event, address: string, fileName: string
   await fs.writeFile(join(dirPath, fileName), imageFile)
 })
 
+ipcMain.handle('setWeb3StorageToken', async (event, token: string) => {
+  web3Storage = new Web3Storage({ token })
+})
+
 ipcMain.handle('uploadModelToFilecoin', async (event, address: string) => {
   const files = await getFilesFromPath(join(pythonDir, `${address}.xml`))
-  return web3storage.put(files)
+  return web3Storage.put(files)
 })
 
 ipcMain.handle('downloadModelFromFilecoin', async (event, cid: string, address: string) => {
-  const res = await web3storage.get(cid)
+  const res = await web3Storage.get(cid)
   const files = (await res?.files())!
   const modelFilePath = join(pythonDir, `${address}.xml`)
   const writer = createWriteStream(modelFilePath)
@@ -88,5 +91,5 @@ ipcMain.handle('cleanupModelFiles', async (event, address: string) => {
   const imagesFolderPath = join(pythonDir, 'dataset', 'new_class', address)
   const modelFilePath = join(pythonDir, `${address}.xml`)
   await fs.rm(imagesFolderPath, { recursive: true, force: true })
-  await fs.rm(modelFilePath)
+  await fs.rm(modelFilePath, { recursive: true, force: true })
 })

@@ -37,11 +37,15 @@ async function storeFaceImage(address: string, fileName: string, imageFile: Arra
   await ipcRenderer.invoke('storeFaceImage', address, fileName, imageFile)
 }
 
+async function setWeb3StorageToken(token: string): Promise<void> {
+  return ipcRenderer.invoke('setWeb3StorageToken', token)
+}
+
 async function uploadModelToFilecoin(address: string): Promise<string> {
   return ipcRenderer.invoke('uploadModelToFilecoin', address)
 }
 
-async function downloadModelFromFilecoin(cid: string, address: string): Promise<string> {
+async function downloadModelFromFilecoin(cid: string, address: string): Promise<void> {
   return ipcRenderer.invoke('downloadModelFromFilecoin', cid, address)
 }
 
@@ -54,6 +58,7 @@ import { ipcRenderer, contextBridge } from 'electron'
 contextBridge.exposeInMainWorld('electron', {
   runPythonScript,
   storeFaceImage,
+  setWeb3StorageToken,
   uploadModelToFilecoin,
   downloadModelFromFilecoin,
   cleanupModelFiles,
