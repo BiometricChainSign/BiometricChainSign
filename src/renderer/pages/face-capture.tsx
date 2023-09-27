@@ -1,6 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { ActionIcon, AspectRatio, Box, Button, Image, Loader, Stack, Text, Title, useMantineTheme } from '@mantine/core'
+import {
+  ActionIcon,
+  AspectRatio,
+  Box,
+  Button,
+  Image,
+  Loader,
+  LoadingOverlay,
+  Stack,
+  Text,
+  Title,
+  useMantineTheme,
+} from '@mantine/core'
 import { notifications } from '@mantine/notifications'
 import { IconCamera, IconCheck, IconReload, IconX } from '@tabler/icons-react'
 import Webcam from 'react-webcam'
@@ -192,7 +204,9 @@ export default function FaceCapturePage() {
       </Stack>
 
       <AspectRatio ratio={1} w='100%' maw={400} mx='auto' bg='black' style={{ borderRadius: theme.radius.md }}>
-        <Box>
+        <LoadingOverlay visible={!!lastCapturedPhoto && loading} style={{ borderRadius: theme.radius.md }} />
+
+        <Box style={{ borderRadius: theme.radius.md }}>
           {!lastCapturedPhoto && <Loader m='auto' />}
 
           {!lastCapturedPhoto && (
@@ -207,28 +221,23 @@ export default function FaceCapturePage() {
             />
           )}
 
-          {!!lastCapturedPhoto && <Image src={lastCapturedPhoto} style={{ zIndex: 3, opacity: 0.7 }} />}
+          {!!lastCapturedPhoto && <Image src={lastCapturedPhoto} />}
 
-          <ActionIcon
-            onClick={onCapture}
-            loading={loading}
-            size='xl'
-            variant='filled'
-            color='indigo'
-            style={{ position: 'absolute', bottom: 20, margin: '0 auto', zIndex: 4 }}
-          >
-            <IconCamera />
-          </ActionIcon>
+          {!loading && (
+            <ActionIcon
+              onClick={onCapture}
+              size='xl'
+              variant='filled'
+              color='indigo'
+              style={{ position: 'absolute', bottom: 20, margin: '0 auto', zIndex: 4 }}
+            >
+              <IconCamera />
+            </ActionIcon>
+          )}
         </Box>
       </AspectRatio>
 
-      <Button
-        onClick={() => navigate('/document-select')}
-        disabled={loading}
-        leftIcon={<IconX />}
-        variant='light'
-        color='red'
-      >
+      <Button onClick={() => navigate('/document-select')} leftIcon={<IconX />} variant='light' color='red'>
         Cancelar
       </Button>
     </Stack>
