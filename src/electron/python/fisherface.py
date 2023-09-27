@@ -1,19 +1,27 @@
-import cv2
 import os
 from sys import argv
 
-import re
 import json
+import re
 from enum import Enum
-from typing import List, TypedDict
 
+import cv2
 import numpy as np
+
+from typing import List, TypedDict
 import cv2.typing
 
 BASE_PATH = __file__.removesuffix("fisherface.py")
+DEFAULT_MODEL_FILE = os.path.join(BASE_PATH, "classifierFisherface.xml")
+DEFAULT_TRAINING_DATA = os.path.join(
+    BASE_PATH, "dataset", "AT&T Database of Faces", "training-data"
+)
 
-DEFAULT_MODEL_FILE = f"{BASE_PATH}classifierFisherface.xml"
-DEFAULT_TRAINING_DATA = f"{BASE_PATH}dataset/AT&T Database of Faces/training-data"
+
+def debug_img(img: cv2.typing.MatLike):
+    cv2.imshow("DEBUG", img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 
 class Model:
@@ -40,8 +48,9 @@ class FisherfaceFaceRecognizer:
     def __init__(self) -> None:
         self.model = cv2.face.FisherFaceRecognizer_create()
         self.cascade_classifier = cv2.CascadeClassifier(
-            f"{BASE_PATH}haarcascade_frontalface_default.xml"
+            os.path.join(BASE_PATH, "haarcascade_frontalface_default.xml")
         )
+
         self.faces = []
         self.labels = []
         self.trained = False
@@ -54,21 +63,23 @@ class FisherfaceFaceRecognizer:
         self.model.read(path if path is not None else DEFAULT_MODEL_FILE)
         self.trained = True
 
-    def detect_and_resize_face(
-        self, image: cv2.typing.MatLike
+    def preprocess_img(
+        self, img: cv2.typing.MatLike
     ) -> cv2.typing.MatLike | None:
-        resized_width, resized_height = (50, 38)
-        gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        resized_width, resized_height = (25, 25)
+        gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
         detected_faces = self.cascade_classifier.detectMultiScale(
-            gray_image, scaleFactor=1.01, minNeighbors=4, minSize=(30, 30)
+            gray_img, scaleFactor=1.2, minNeighbors=3, minSize=(25, 25)
         )
 
         if len(detected_faces) == 0:
+            """DEBUG"""
+            # debug_img(gray_img)
             return None
 
         x, y, w, h = detected_faces[0]
-        face_roi = gray_image[y: y + h, x: x + w]
+        face_roi = gray_img[y: y + h, x: x + w]
         resized_face = cv2.resize(face_roi, (resized_width, resized_height))
 
         return resized_face
@@ -80,16 +91,21 @@ class FisherfaceFaceRecognizer:
 
         label = None
         for dir in os.listdir(training_data_path):
+            if dir.startswith("."):
+                continue
+
             if default_label is not None:
                 label = default_label
             else:
                 label = dir.split("s")
                 label = int(label[1] if len(label) >= 1 else label[0])
 
-            for pathImage in os.listdir(os.path.join(training_data_path, dir)):
-                imagePath = os.path.join(training_data_path, dir, pathImage)
-                image = cv2.imread(imagePath)
-                detected_face = self.detect_and_resize_face(image)
+            for pathImg in os.listdir(os.path.join(training_data_path, dir)):
+                if pathImg.startswith("."):
+                    continue
+                pathImg = os.path.join(training_data_path, dir, pathImg)
+                img = cv2.imread(pathImg)
+                detected_face = self.preprocess_img(img)
 
                 if detected_face is not None:
                     self.faces.append(detected_face)
@@ -97,7 +113,7 @@ class FisherfaceFaceRecognizer:
 
                 """DEBUG"""
                 # if detected_face is None:
-                #     print(f'label: {dir}, image: {pathImage}')
+                #     print(f"label: {dir}, img: {pathImg}")
 
         if old_len_faces == len(self.faces) or len(self.faces) <= (old_len_faces + 7):
             raise ValueError("No new classes have been added.")
@@ -114,18 +130,18 @@ class FisherfaceFaceRecognizer:
         self.trained = True
 
     def predict(
-        self, test_image_path: str
+        self, test_img: cv2.typing.MatLike
     ) -> tuple[int, float] | tuple[None, None]:
         if not self.trained:
             raise ValueError(
                 "The model has not been trained yet. Please train the model first."
             )
-        image = cv2.imread(test_image_path)
-        detected_face = self.detect_and_resize_face(image)
+
+        detected_face = self.preprocess_img(test_img)
 
         if detected_face is not None:
             label, confidence = self.model.predict(detected_face)
-            if confidence < 270:
+            if confidence < 220:
                 return label, confidence
             else:
                 return None, None
@@ -135,15 +151,14 @@ class FisherfaceFaceRecognizer:
     def add_class(
         self,
         model_file=DEFAULT_MODEL_FILE,
-        new_class_path: str = "dataset/new_class",
+        new_class_path: str = os.path.join(BASE_PATH, "dataset", "new_class"),
         label=0,
     ) -> bool:
         """This function is designed to be called by Electron"""
 
         self.training_data_setup()
         self.training_data_setup(
-            training_data_path=new_class_path, default_label=label
-        )
+            training_data_path=new_class_path, default_label=label)
         self.train(file_name=model_file)
         return True
 
@@ -165,19 +180,27 @@ if __name__ == "__main__":
     if args["action"] == Action.ADD_CLASS.value:
         recognizer.add_class(
             model_file=os.path.join(
-                BASE_PATH, *re.split(r'[\\/]', args['data']['modelFile'])),
+                BASE_PATH, *re.split(r"[\\/]", args["data"]["modelFile"])
+            ),
             new_class_path=os.path.join(
-                BASE_PATH, *re.split(r'[\\/]', args['data']['classPath'])),
+                BASE_PATH, *re.split(r"[\\/]", args["data"]["classPath"])
+            ),
         )
 
         print(json.dumps({"result": True}))
     elif args["action"] == Action.TEST_IMG.value:
-        recognizer.load_model(os.path.join(
-            BASE_PATH, *re.split(r'[\\/]', args['data']['modelFile'])))
+        recognizer.load_model(
+            os.path.join(
+                BASE_PATH, *re.split(r"[\\/]", args["data"]["modelFile"]))
+        )
 
         label, confidence = recognizer.predict(
-            os.path.join(
-                BASE_PATH, *re.split(r'[\\/]', args['data']['testImagePath'])))
-                
+            cv2.imread(
+                os.path.join(
+                    BASE_PATH, *
+                    re.split(r"[\\/]", args["data"]["testImgPath"])
+                )
+            )
+        )
 
-        print(json.dumps({'label': label, 'confidence': confidence}))
+        print(json.dumps({"label": label, "confidence": confidence}))

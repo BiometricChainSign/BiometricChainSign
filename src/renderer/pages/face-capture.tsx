@@ -58,6 +58,17 @@ const notifyFaceNotDetected = () =>
     autoClose: 5000,
   })
 
+const notifyFaceNotRecognized = () =>
+  notifications.show({
+    id: '1',
+    title: 'Não foi possível reconhecer sua face',
+    message: 'Por favor, tente novamente',
+    color: 'red',
+    icon: <IconX />,
+    withBorder: true,
+    autoClose: 5000,
+  })
+
 const notifyTransactionRejected = () =>
   notifications.update({
     id: '1',
@@ -135,25 +146,23 @@ export default function FaceCapturePage() {
     notifyWaitingConfirmation()
     await contract.write({ functionName: 'setSignatoryCid', args: [cid] })
     notifyTransationConfirmed()
-
-    await window.electron.cleanupModelFiles(address!)
   }
 
   async function testImage(cid: string) {
     await captureFaceImages(1)
     await window.electron.downloadModelFromFilecoin(cid, address!)
 
-    const testImgResult = await window.electron.runPythonScript({
+    const testImageResult = (await window.electron.runPythonScript({
       action: 'TEST_IMG',
       data: {
         modelFile: `${address}.xml`,
         testImagePath: `dataset/new_class/${address}/1.jpg`,
       },
-    })
+    })) as { label: number | null; confidence: number | null }
 
-    // TODO: Handle face not recognized
-
-    await window.electron.cleanupModelFiles(address!)
+    if (!testImageResult.confidence) {
+      throw new Error('FaceNotRecognized')
+    }
   }
 
   async function onCapture() {
@@ -184,6 +193,8 @@ export default function FaceCapturePage() {
         notifyTransactionRejected()
       } else if (error instanceof Error && error.message === 'FaceNotDetected') {
         notifyFaceNotDetected()
+      } else if (error instanceof Error && error.message === 'FaceNotRecognized') {
+        notifyFaceNotRecognized()
       } else {
         console.error(error)
         notifySomethingWentWrong()
@@ -192,6 +203,7 @@ export default function FaceCapturePage() {
 
     setLastCapturedPhoto(null)
     setLoading(false)
+    window.electron.cleanupModelFiles(address!)
   }
 
   const theme = useMantineTheme()
