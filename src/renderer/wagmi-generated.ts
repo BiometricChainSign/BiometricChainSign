@@ -63,7 +63,7 @@ export const mainnetABI = [
   },
 ] as const
 
-export const mainnetAddress = '0x40d9F05C436dB94d02886813C80Ef1634CbAc641' as const
+export const mainnetAddress = '0x7C6312A61Ab5645e53be42F154028D14B15B5c37' as const
 
 export const mainnetConfig = { address: mainnetAddress, abi: mainnetABI } as const
 
@@ -119,7 +119,7 @@ export const sepoliaABI = [
   },
 ] as const
 
-export const sepoliaAddress = '0x40d9F05C436dB94d02886813C80Ef1634CbAc641' as const
+export const sepoliaAddress = '0x7C6312A61Ab5645e53be42F154028D14B15B5c37' as const
 
 export const sepoliaConfig = { address: sepoliaAddress, abi: sepoliaABI } as const
 

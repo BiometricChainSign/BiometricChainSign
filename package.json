@@ -14,7 +14,8 @@
     "make": "electron-forge make",
     "package": "electron-forge package",
     "publish": "electron-forge publish",
-    "start": "electron-forge start"
+    "start": "electron-forge start",
+    "python-venv-setup": "cd ./src/electron/python/ && python -m venv .venv && .venv/bin/pip install -r requirements.txt"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
