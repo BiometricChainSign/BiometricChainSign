@@ -25,7 +25,7 @@ declare global {
        * // data.modelFile person.xml
        * // data.classPath path to face imgs dataset/new_class/person -> "dataset/new_class/"
        */
-      runPythonScript: <T>(argv: Argv) => Promise<T>
+      runScript: <T>(argv: Argv) => Promise<T>
 
       storeFaceImage: (address: string, fileName: string, imageFile: Buffer) => Promise<void>
 

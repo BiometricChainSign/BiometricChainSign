@@ -20,13 +20,13 @@ type Argv = { action: keyof typeof Action; data: AddClassData | TestImgData }
  * // data.modelFile person.xml
  * // data.classPath path to face imgs dataset/new_class/person -> "dataset/new_class/"
  */
-async function runPythonScript<T>(argv: Argv): Promise<T> {
+async function runScript<T>(argv: Argv): Promise<T> {
   const result = (await new Promise(resolve => {
-    ipcRenderer.once('pythonScript', (event, args) => {
+    ipcRenderer.once('script', (event, args) => {
       resolve(args)
     })
 
-    ipcRenderer.send('pythonScript', argv)
+    ipcRenderer.send('script', argv)
   })) as Promise<T> | Error
   if (result instanceof Error) throw new Error(result.message)
 
@@ -56,7 +56,7 @@ async function cleanupModelFiles(address: string): Promise<void> {
 import { ipcRenderer, contextBridge } from 'electron'
 
 contextBridge.exposeInMainWorld('electron', {
-  runPythonScript,
+  runScript,
   storeFaceImage,
   setWeb3StorageToken,
   uploadModelToFilecoin,

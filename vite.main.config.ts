@@ -15,7 +15,7 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         {
-          src: 'src/electron/python',
+          src: 'src/electron/static',
           dest: './',
         },
       ],

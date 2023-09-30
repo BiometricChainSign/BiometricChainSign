@@ -8,7 +8,29 @@ import { VitePlugin } from '@electron-forge/plugin-vite'
 const config: ForgeConfig = {
   packagerConfig: {},
   rebuildConfig: {},
-  makers: [new MakerSquirrel({}), new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({})],
+  makers: [
+    new MakerSquirrel({
+      name: 'BiometricChainSign',
+      description:
+        'BiometricChainSign is an innovative app designed to streamline and ensure secure document signing using blockchain and biometric technology. It provides an efficient and trustworthy solution for authenticating and recording document signatures, offering enhanced security and ease of use.',
+      authors: 'Constantini Gustavo',
+    }),
+    new MakerZIP({}, ['darwin']),
+    new MakerRpm({
+      options: {
+        name: 'BiometricChainSign',
+        description:
+          'BiometricChainSign is an innovative app designed to streamline and ensure secure document signing using blockchain and biometric technology. It provides an efficient and trustworthy solution for authenticating and recording document signatures, offering enhanced security and ease of use.',
+      },
+    }),
+    new MakerDeb({
+      options: {
+        name: 'BiometricChainSign',
+        description:
+          'BiometricChainSign is an innovative app designed to streamline and ensure secure document signing using blockchain and biometric technology. It provides an efficient and trustworthy solution for authenticating and recording document signatures, offering enhanced security and ease of use.',
+      },
+    }),
+  ],
   plugins: [
     new VitePlugin({
       build: [

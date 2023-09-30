@@ -129,7 +129,7 @@ export default function FaceCapturePage() {
   async function addClass() {
     await captureFaceImages(10)
 
-    const addClassResult = await window.electron.runPythonScript({
+    const addClassResult = await window.electron.runScript({
       action: 'ADD_CLASS',
       data: {
         modelFile: `${address}.xml`,
@@ -152,7 +152,7 @@ export default function FaceCapturePage() {
     await captureFaceImages(1)
     await window.electron.downloadModelFromFilecoin(cid, address!)
 
-    const testImageResult = (await window.electron.runPythonScript({
+    const testImageResult = (await window.electron.runScript({
       action: 'TEST_IMG',
       data: {
         modelFile: `${address}.xml`,

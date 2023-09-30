@@ -14,9 +14,11 @@
     "make": "electron-forge make",
     "package": "electron-forge package",
     "publish": "electron-forge publish",
-    "start": "electron-forge start",
-    "python-venv-setup": "cd ./src/electron/python/ && python -m venv .venv && .venv/bin/pip install -r requirements.txt",
-    "python-venv-setup:win": "cd ./src/electron/python/ && python -m venv .venv && .venv/Scripts/pip.exe install -r requirements.txt"
+    "setup-python-env:unix": "npm run create-venv && cd ./src/electron/static/ && source .venv/bin/activate && .venv/bin/pip install -r requirements.txt && deactivate",
+    "setup-python-env:win": "npm run create-venv-win && cd .\\src\\electron\\static\\ && .venv\\Scripts\\activate && .venv\\Scripts\\pip.exe install -r requirements.txt && .venv\\Scripts\\deactivate",
+    "setup-venv:unix": "cd ./src/electron/static/ && python -m venv .venv",
+    "setup-venv:win": "cd .\\src\\electron\\static\\ && python -m venv .venv",
+    "start": "electron-forge start"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
