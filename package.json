@@ -1,5 +1,5 @@
 {
-  "name": "biometricchainsign-interface",
+  "name": "biometricchainsign",
   "version": "1.0.0",
   "description": "",
   "keywords": [],
@@ -31,6 +31,7 @@
     "@web3modal/react": "^2.7.0",
     "canvg": "^4.0.1",
     "dotenv": "^16.3.1",
+    "electron-squirrel-startup": "^1.0.0",
     "pdf-lib": "^1.17.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -46,7 +47,7 @@
     "@electron-forge/cli": "^6.4.1",
     "@electron-forge/maker-deb": "^6.4.1",
     "@electron-forge/maker-rpm": "^6.4.1",
-    "@electron-forge/maker-wix": "^6.4.2",
+    "@electron-forge/maker-squirrel": "^6.4.2",
     "@electron-forge/maker-zip": "^6.4.1",
     "@electron-forge/plugin-auto-unpack-natives": "^6.4.1",
     "@electron-forge/plugin-vite": "^6.4.1",

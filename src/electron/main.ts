@@ -29,6 +29,8 @@ const createWindow = () => {
   })
 }
 
+if (require('electron-squirrel-startup')) app.quit()
+
 app.on('ready', () => {
   createWindow()
 })
