@@ -97,3 +97,4 @@ src/electron/static/.venv
 
 src/electron/static/*.xml
 !src/electron/static/haarcascade_frontalface_default.xml
+package
