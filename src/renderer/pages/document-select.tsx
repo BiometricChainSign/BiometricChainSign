@@ -39,7 +39,12 @@ export default function DocumentSelectPage() {
       // Someone has already signed this document
       navigate('/signatory-addresses', {
         state: {
-          data: { documentHash: documentHash, addresses: signatories, userIsSignatory: signatories.includes(address!) },
+          data: {
+            documentHash: documentHash,
+            addresses: signatories,
+            userIsSignatory: signatories.includes(address!),
+            pdfFile: file,
+          },
         },
       })
     } catch (error) {
