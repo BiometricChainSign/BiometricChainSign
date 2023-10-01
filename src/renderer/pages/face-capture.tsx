@@ -160,7 +160,7 @@ export default function FaceCapturePage() {
       },
     })) as { label: number | null; confidence: number | null }
 
-    if (!testImageResult.confidence) {
+    if (testImageResult.label !== 0 && !testImageResult.confidence) {
       throw new Error('FaceNotRecognized')
     }
   }
