@@ -206,6 +206,11 @@ export default function FaceCapturePage() {
     window.electron.cleanupModelFiles(address!)
   }
 
+  function cancel() {
+    notifications.clean()
+    navigate('/document-select')
+  }
+
   const theme = useMantineTheme()
 
   return (
@@ -249,7 +254,7 @@ export default function FaceCapturePage() {
         </Box>
       </AspectRatio>
 
-      <Button onClick={() => navigate('/document-select')} leftIcon={<IconX />} variant='light' color='red'>
+      <Button onClick={cancel} leftIcon={<IconX />} variant='light' color='red'>
         Cancelar
       </Button>
     </Stack>

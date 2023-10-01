@@ -155,6 +155,11 @@ function PdfStampAddPage() {
     setLoading(false)
   }
 
+  function cancel() {
+    notifications.clean()
+    navigate('/document-select')
+  }
+
   return (
     <>
       <Group w='100%' pos='fixed' bottom={40} left={0} position='center' style={{ zIndex: 3 }}>
@@ -180,7 +185,7 @@ function PdfStampAddPage() {
                 <IconArrowRight />
               </ActionIcon>
 
-              <Button onClick={() => navigate('/document-select')} leftIcon={<IconX />} variant='light' color='red'>
+              <Button onClick={cancel} leftIcon={<IconX />} variant='light' color='red'>
                 Cancelar
               </Button>
 
