@@ -3,6 +3,37 @@ export const abi = [
     inputs: [
       {
         internalType: 'string',
+        name: '_cid',
+        type: 'string',
+      },
+    ],
+    name: 'setSignatoryCid',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'string',
+        name: '_stampedDocHash',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: '_parentDocHash',
+        type: 'string',
+      },
+    ],
+    name: 'signDocument',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'string',
         name: '',
         type: 'string',
       },
@@ -54,37 +85,6 @@ export const abi = [
       },
     ],
     stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'string',
-        name: '_cid',
-        type: 'string',
-      },
-    ],
-    name: 'setSignatoryCid',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'string',
-        name: '_stampedDocHash',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: '_origDocHash',
-        type: 'string',
-      },
-    ],
-    name: 'signDocument',
-    outputs: [],
-    stateMutability: 'nonpayable',
     type: 'function',
   },
   {
