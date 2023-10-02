@@ -21,12 +21,6 @@ const createWindow = () => {
     mainWindow.loadFile(join(__dirname, 'index.html'))
     mainWindow.removeMenu()
   }
-
-  mainWindow.webContents.on('did-finish-load', () => {
-    mainWindow.webContents.executeJavaScript(`
-      const stream = navigator.mediaDevices.getUserMedia({ video: true });
-    `)
-  })
 }
 
 if (require('electron-squirrel-startup')) app.quit()
