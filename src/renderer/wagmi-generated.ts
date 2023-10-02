@@ -17,6 +17,23 @@ import {
 
 export const mainnetABI = [
   {
+    stateMutability: 'nonpayable',
+    type: 'function',
+    inputs: [{ name: '_cid', internalType: 'string', type: 'string' }],
+    name: 'setSignatoryCid',
+    outputs: [],
+  },
+  {
+    stateMutability: 'nonpayable',
+    type: 'function',
+    inputs: [
+      { name: '_stampedDocHash', internalType: 'string', type: 'string' },
+      { name: '_parentDocHash', internalType: 'string', type: 'string' },
+    ],
+    name: 'signDocument',
+    outputs: [],
+  },
+  {
     stateMutability: 'view',
     type: 'function',
     inputs: [{ name: '', internalType: 'string', type: 'string' }],
@@ -38,23 +55,6 @@ export const mainnetABI = [
     outputs: [{ name: '', internalType: 'string', type: 'string' }],
   },
   {
-    stateMutability: 'nonpayable',
-    type: 'function',
-    inputs: [{ name: '_cid', internalType: 'string', type: 'string' }],
-    name: 'setSignatoryCid',
-    outputs: [],
-  },
-  {
-    stateMutability: 'nonpayable',
-    type: 'function',
-    inputs: [
-      { name: '_stampedDocHash', internalType: 'string', type: 'string' },
-      { name: '_origDocHash', internalType: 'string', type: 'string' },
-    ],
-    name: 'signDocument',
-    outputs: [],
-  },
-  {
     stateMutability: 'view',
     type: 'function',
     inputs: [{ name: '', internalType: 'address', type: 'address' }],
@@ -63,7 +63,7 @@ export const mainnetABI = [
   },
 ] as const
 
-export const mainnetAddress = '0x7D18DD11D85DD5399a529938D7C8231eB5f8089b' as const
+export const mainnetAddress = '0xeF427b6E656b7a63fbA3769946afD161E2aB27B3' as const
 
 export const mainnetConfig = { address: mainnetAddress, abi: mainnetABI } as const
 
@@ -73,6 +73,23 @@ export const mainnetConfig = { address: mainnetAddress, abi: mainnetABI } as con
 
 export const sepoliaABI = [
   {
+    stateMutability: 'nonpayable',
+    type: 'function',
+    inputs: [{ name: '_cid', internalType: 'string', type: 'string' }],
+    name: 'setSignatoryCid',
+    outputs: [],
+  },
+  {
+    stateMutability: 'nonpayable',
+    type: 'function',
+    inputs: [
+      { name: '_stampedDocHash', internalType: 'string', type: 'string' },
+      { name: '_parentDocHash', internalType: 'string', type: 'string' },
+    ],
+    name: 'signDocument',
+    outputs: [],
+  },
+  {
     stateMutability: 'view',
     type: 'function',
     inputs: [{ name: '', internalType: 'string', type: 'string' }],
@@ -94,23 +111,6 @@ export const sepoliaABI = [
     outputs: [{ name: '', internalType: 'string', type: 'string' }],
   },
   {
-    stateMutability: 'nonpayable',
-    type: 'function',
-    inputs: [{ name: '_cid', internalType: 'string', type: 'string' }],
-    name: 'setSignatoryCid',
-    outputs: [],
-  },
-  {
-    stateMutability: 'nonpayable',
-    type: 'function',
-    inputs: [
-      { name: '_stampedDocHash', internalType: 'string', type: 'string' },
-      { name: '_origDocHash', internalType: 'string', type: 'string' },
-    ],
-    name: 'signDocument',
-    outputs: [],
-  },
-  {
     stateMutability: 'view',
     type: 'function',
     inputs: [{ name: '', internalType: 'address', type: 'address' }],
@@ -119,7 +119,7 @@ export const sepoliaABI = [
   },
 ] as const
 
-export const sepoliaAddress = '0x7D18DD11D85DD5399a529938D7C8231eB5f8089b' as const
+export const sepoliaAddress = '0xeF427b6E656b7a63fbA3769946afD161E2aB27B3' as const
 
 export const sepoliaConfig = { address: sepoliaAddress, abi: sepoliaABI } as const
 
