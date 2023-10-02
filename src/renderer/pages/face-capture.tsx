@@ -228,10 +228,11 @@ export default function FaceCapturePage() {
 
           {!lastCapturedPhoto && (
             <Webcam
+              ref={webcamRef}
               audio={false}
               width='100%'
               height='100%'
-              ref={webcamRef}
+              mirrored
               screenshotFormat='image/jpeg'
               videoConstraints={{ width: 1000, height: 1000 }}
               style={{ position: 'absolute', zIndex: 2, borderRadius: theme.radius.md }}
