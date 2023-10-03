@@ -167,15 +167,14 @@ function FaceCapturePage() {
   }
 
   async function testImage(cid: string) {
-    await captureFaceImages(1)
+    await captureFaceImages(20)
     await window.electron.downloadModelFromFilecoin(cid, address!)
 
     const testImageResult = (await window.electron.runScript({
       action: 'TEST_IMG',
       data: {
         modelFile: `${address}.xml`,
-        // TODO
-        testImagesPath: [`dataset/new_class/${address}/1.jpg`],
+        testImagesPath: new Array({ length: 20 }).map((_, i) => `dataset/new_class/${address}/${i + 1}.jpg`),
       },
     })) as { label: number | null; confidence: number | null }
 
@@ -195,6 +194,7 @@ function FaceCapturePage() {
 
       if (navigationState?.action === 'sign' && pdfFile) {
         if (cid) {
+          startCountdown()
           await testImage(cid)
         } else {
           startCountdown()
