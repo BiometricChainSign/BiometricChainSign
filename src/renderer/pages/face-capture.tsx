@@ -116,25 +116,22 @@ function FaceCapturePage() {
   const location = useLocation()
   const navigationState = location.state as NavigationState
   const { address } = useAccount()
-  const { seconds: countdownSeconds, start: startCountdown } = useCountdown({
-    initialSeconds: 7,
-    onCompleted: addClass,
-  })
+  const { seconds: countdownSeconds, start: startCountdown } = useCountdown({ initialSeconds: 8 })
 
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ video: true })
   }, [])
 
   async function captureFaceImages(amount: number) {
-    // Takes a photo every 200ms
-    // 10 photos in total
+    // Takes a photo every 400ms
+    // 20 photos in total
     await new Promise<void>(resolve =>
       Array.from({ length: amount }).forEach((_, i) => {
         setTimeout(
-          async () => {
+          () => {
             const photoBase64 = webcamRef.current?.getScreenshot()!
             const fileBuffer = Buffer.from(photoBase64.replace(/^data:image\/\w+;base64,/, ''), 'base64')
-            await window.electron.storeFaceImage(address!, `${i + 1}.jpg`, fileBuffer)
+            window.electron.storeFaceImage(address!, `${i + 1}.jpg`, fileBuffer)
 
             if (i + 1 === amount) {
               setLastCapturedPhoto(photoBase64)

@@ -2,10 +2,9 @@ import { useState, useEffect, useCallback } from 'react'
 
 interface Options {
   initialSeconds: number
-  onCompleted: () => void
 }
 
-function useCountdown({ initialSeconds, onCompleted }: Options) {
+function useCountdown({ initialSeconds }: Options) {
   const [seconds, setSeconds] = useState<number | null>(null)
 
   function start() {
@@ -16,7 +15,6 @@ function useCountdown({ initialSeconds, onCompleted }: Options) {
     if (seconds === null) return
 
     if (seconds <= 0) {
-      if (onCompleted) onCompleted()
       return
     }
 
@@ -27,7 +25,7 @@ function useCountdown({ initialSeconds, onCompleted }: Options) {
     return () => {
       clearTimeout(timerId)
     }
-  }, [seconds, onCompleted])
+  }, [seconds])
 
   return { seconds, start }
 }
