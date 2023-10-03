@@ -12,7 +12,7 @@ type AddClassData = {
 
 type TestImgData = {
   modelFile: string
-  testImagePath: string
+  testImagesPath: string[]
 }
 
 type Argv = { action: keyof typeof Action; data: AddClassData | TestImgData }

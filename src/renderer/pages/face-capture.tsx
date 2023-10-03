@@ -156,7 +156,8 @@ export default function FaceCapturePage() {
       action: 'TEST_IMG',
       data: {
         modelFile: `${address}.xml`,
-        testImagePath: `dataset/new_class/${address}/1.jpg`,
+        // TODO
+        testImagesPath: [`dataset/new_class/${address}/1.jpg`],
       },
     })) as { label: number | null; confidence: number | null }
 

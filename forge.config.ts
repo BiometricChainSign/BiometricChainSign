@@ -18,7 +18,7 @@ const config: ForgeConfig = {
         'BiometricChainSign is an innovative app designed to streamline and ensure secure document signing using blockchain and biometric technology. It provides an efficient and trustworthy solution for authenticating and recording document signatures, offering enhanced security and ease of use.',
       authors: 'Constantini Gustavo',
       noDelta: true,
-      noMsi: true,
+      noMsi: false,
       version: '1.0.0',
     }),
     new MakerZIP({}, ['darwin']),

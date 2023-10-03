@@ -136,7 +136,7 @@ class FisherfaceFaceRecognizer:
         self.trained = True
 
     def predict(
-        self, test_img: cv2.typing.MatLike
+        self, test_img: cv2.typing.MatLike, _confidence: int = None
     ) -> tuple[int, float] | tuple[None, None]:
         if not self.trained:
             raise ValueError(
@@ -144,10 +144,10 @@ class FisherfaceFaceRecognizer:
             )
 
         detected_face = self.preprocess_img(test_img)
-
+        
         if detected_face is not None:
             label, confidence = self.model.predict(detected_face)
-            if confidence < 220:
+            if confidence < _confidence if _confidence is not None else 220:
                 return label, confidence
             else:
                 return None, None
@@ -199,14 +199,25 @@ if __name__ == "__main__":
             os.path.join(
                 BASE_PATH, *re.split(r"[\\/]", args["data"]["modelFile"]))
         )
+        
+        test_result: List[tuple[int, float]] = []
 
-        label, confidence = recognizer.predict(
-            cv2.imread(
-                os.path.join(
-                    BASE_PATH, *
-                    re.split(r"[\\/]", args["data"]["testImagePath"])
-                )
+        for img_path in args["data"]["testImagesPath"]:                  
+            label, confidence = recognizer.predict(
+                cv2.imread(
+                    os.path.join(
+                        BASE_PATH, *
+                        re.split(r"[\\/]", img_path)
+                    )
+                ),
+                210
             )
-        )
 
-        print(json.dumps({"label": label, "confidence": confidence}))
+            if label is not None and confidence is not None:
+                test_result.append((label, confidence))
+                
+        if len(test_result) > 0:
+            label, confidence = min(test_result, key=lambda x: x[1])
+            print(json.dumps({"label": 0, "confidence": 0}))
+        else:
+             print(json.dumps({"label": None, "confidence": None}))
