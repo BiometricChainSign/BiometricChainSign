@@ -29,7 +29,6 @@ async function callScript(scriptName: string, argv: { [key: string]: unknown }) 
       })
 
       exe.stdout.on('end', () => {
-        console.log(resultError, result)
         if (resultError == '') {
           resolve(JSON.parse(result))
         } else {
@@ -60,7 +59,6 @@ async function callScript(scriptName: string, argv: { [key: string]: unknown }) 
       })
 
       pyprog.stdout.on('end', () => {
-        console.log(result)
         if (resultError == '') {
           resolve(JSON.parse(result))
         } else {

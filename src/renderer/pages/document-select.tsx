@@ -48,7 +48,7 @@ export default function DocumentSelectPage() {
         },
       })
     } catch (error) {
-      console.log(error)
+      console.error(error)
 
       notifications.show({
         autoClose: 5000,

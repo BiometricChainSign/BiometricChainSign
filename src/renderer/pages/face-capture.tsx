@@ -5,22 +5,25 @@ import {
   AspectRatio,
   Box,
   Button,
+  Flex,
+  Group,
   Image,
   Loader,
   LoadingOverlay,
   Stack,
   Text,
   Title,
-  useMantineTheme,
+  createStyles,
 } from '@mantine/core'
 import { notifications } from '@mantine/notifications'
-import { IconCamera, IconCheck, IconReload, IconX } from '@tabler/icons-react'
+import { IconCamera, IconCheck, IconX } from '@tabler/icons-react'
 import Webcam from 'react-webcam'
 import { TransactionExecutionError } from 'viem'
 import { useAccount } from 'wagmi'
 import { Buffer } from 'buffer'
 
 import { contract } from '../contract'
+import useCountdown from '../hooks/use-countdown'
 
 type NavigationState = { action: 'sign' | 'verify'; data: { pdfFile?: File } } | undefined
 
@@ -91,7 +94,21 @@ const notifySomethingWentWrong = () =>
     autoClose: 5000,
   })
 
-export default function FaceCapturePage() {
+const useStyles = createStyles(theme => ({
+  countdown: {
+    width: '3.2rem',
+    height: '3.2rem',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontSize: '2rem',
+    borderRadius: theme.radius.md,
+    color: theme.colors.gray[9],
+    backdropFilter: 'blur(2px)',
+    background: '#ffffff99',
+  },
+}))
+
+function FaceCapturePage() {
   const [loading, setLoading] = useState(false)
   const [lastCapturedPhoto, setLastCapturedPhoto] = useState<string | null>(null)
   const webcamRef = useRef<Webcam>(null)
@@ -99,6 +116,10 @@ export default function FaceCapturePage() {
   const location = useLocation()
   const navigationState = location.state as NavigationState
   const { address } = useAccount()
+  const { seconds: countdownSeconds, start: startCountdown } = useCountdown({
+    initialSeconds: 7,
+    onCompleted: addClass,
+  })
 
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ video: true })
@@ -120,14 +141,14 @@ export default function FaceCapturePage() {
               resolve()
             }
           },
-          200 * (i + 1)
+          400 * (i + 1)
         )
       })
     )
   }
 
   async function addClass() {
-    await captureFaceImages(10)
+    await captureFaceImages(20)
 
     const addClassResult = await window.electron.runScript({
       action: 'ADD_CLASS',
@@ -179,6 +200,7 @@ export default function FaceCapturePage() {
         if (cid) {
           await testImage(cid)
         } else {
+          startCountdown()
           await addClass()
         }
 
@@ -212,7 +234,7 @@ export default function FaceCapturePage() {
     navigate('/document-select')
   }
 
-  const theme = useMantineTheme()
+  const styles = useStyles()
 
   return (
     <Stack h='100%' justify='center' align='center' style={{ flexGrow: 1 }}>
@@ -221,10 +243,14 @@ export default function FaceCapturePage() {
         <Text color='dimmed'>Mantenha sua face centralizada e clique no botão para capturar</Text>
       </Stack>
 
-      <AspectRatio ratio={1} w='100%' maw={400} mx='auto' bg='black' style={{ borderRadius: theme.radius.md }}>
-        <LoadingOverlay visible={!!lastCapturedPhoto && loading} style={{ borderRadius: theme.radius.md }} />
+      <AspectRatio ratio={1} w='100%' maw={400} mx='auto' bg='black' style={{ borderRadius: styles.theme.radius.md }}>
+        <LoadingOverlay
+          overlayBlur={3}
+          visible={!!lastCapturedPhoto && loading}
+          style={{ borderRadius: styles.theme.radius.md }}
+        />
 
-        <Box style={{ borderRadius: theme.radius.md }}>
+        <Box style={{ borderRadius: styles.theme.radius.md }}>
           {!lastCapturedPhoto && <Loader m='auto' />}
 
           {!lastCapturedPhoto && (
@@ -236,23 +262,21 @@ export default function FaceCapturePage() {
               mirrored
               screenshotFormat='image/jpeg'
               videoConstraints={{ width: 1000, height: 1000 }}
-              style={{ position: 'absolute', zIndex: 2, borderRadius: theme.radius.md }}
+              style={{ position: 'absolute', zIndex: 2, borderRadius: styles.theme.radius.md }}
             />
           )}
 
           {!!lastCapturedPhoto && <Image src={lastCapturedPhoto} />}
 
-          {!loading && (
-            <ActionIcon
-              onClick={onCapture}
-              size='xl'
-              variant='filled'
-              color='indigo'
-              style={{ position: 'absolute', bottom: 20, margin: '0 auto', zIndex: 4 }}
-            >
-              <IconCamera />
-            </ActionIcon>
-          )}
+          <Group w='100%' pos='absolute' bottom={40} position='center' style={{ zIndex: 4 }}>
+            {!countdownSeconds && !lastCapturedPhoto && (
+              <ActionIcon onClick={onCapture} loading={loading} size='xl' variant='filled' color='indigo'>
+                <IconCamera />
+              </ActionIcon>
+            )}
+
+            {!!countdownSeconds && <Flex className={styles.classes.countdown}>{countdownSeconds}</Flex>}
+          </Group>
         </Box>
       </AspectRatio>
 
@@ -262,3 +286,5 @@ export default function FaceCapturePage() {
     </Stack>
   )
 }
+
+export default FaceCapturePage
