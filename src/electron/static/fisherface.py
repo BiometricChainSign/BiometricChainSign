@@ -210,7 +210,7 @@ if __name__ == "__main__":
                         re.split(r"[\\/]", img_path)
                     )
                 ),
-                210
+                300
             )
 
             if label is not None and confidence is not None:
@@ -218,6 +218,6 @@ if __name__ == "__main__":
                 
         if len(test_result) > 0:
             label, confidence = min(test_result, key=lambda x: x[1])
-            print(json.dumps({"label": 0, "confidence": 0}))
+            print(json.dumps({"label": label, "confidence": confidence}))
         else:
              print(json.dumps({"label": None, "confidence": None}))

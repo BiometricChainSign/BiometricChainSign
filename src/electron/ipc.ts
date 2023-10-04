@@ -32,9 +32,6 @@ async function callScript(scriptName: string, argv: { [key: string]: unknown }) 
         if (resultError == '') {
           resolve(JSON.parse(result))
         } else {
-          const error = new Error(resultError)
-          console.error(error)
-
           reject(resultError)
         }
       })
@@ -62,8 +59,6 @@ async function callScript(scriptName: string, argv: { [key: string]: unknown }) 
         if (resultError == '') {
           resolve(JSON.parse(result))
         } else {
-          const error = new Error(resultError)
-          console.error(error)
           reject(resultError)
         }
       })

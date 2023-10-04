@@ -48,8 +48,6 @@ export default function DocumentSelectPage() {
         },
       })
     } catch (error) {
-      console.error(error)
-
       notifications.show({
         autoClose: 5000,
         title: 'Algo deu errado',

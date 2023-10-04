@@ -156,7 +156,6 @@ function PdfStampAddPage() {
       notifications.hide('confirmation')
       navigate('/signing-success', { state: { data: { pdfBytes: editedPdfBytes, pdfName: pdfFile.name } } })
     } catch (error) {
-      console.error(error)
       notifications.update({
         id: 'confirmation',
         title: 'Algo deu errado ao confirmar a transação.',
