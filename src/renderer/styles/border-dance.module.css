@@ -1,0 +1,16 @@
+@keyframes borderDance {
+  0% {
+    background-position:
+      left top,
+      right bottom,
+      left bottom,
+      right top;
+  }
+  100% {
+    background-position:
+      left 15px top,
+      right 15px bottom,
+      left bottom 15px,
+      right top 15px;
+  }
+}

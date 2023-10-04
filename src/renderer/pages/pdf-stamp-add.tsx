@@ -9,9 +9,10 @@ import { Rnd } from 'react-rnd'
 import { Canvg } from 'canvg'
 import { useAccount } from 'wagmi'
 
+import Stamp from '../components/stamp'
+import css from '../styles/border-dance.module.css'
 import { contract } from '../contract'
 import { getFileHash } from '../helpers'
-import Stamp from '../components/stamp'
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`
 
@@ -29,6 +30,21 @@ const useStyles = createStyles(theme => ({
   },
   rnd: {
     zIndex: 2,
+  },
+  rndBorder: {
+    '::after': {
+      content: '""',
+      width: '100%',
+      height: ' 100%',
+      position: 'absolute',
+      top: '0',
+      backgroundImage:
+        'linear-gradient(90deg, silver 50%, transparent 50%), linear-gradient(90deg, silver 50%, transparent 50%), linear-gradient(0deg, silver 50%, transparent 50%), linear-gradient(0deg, silver 50%, transparent 50%)',
+      backgroundRepeat: 'repeat-x, repeat-x, repeat-y, repeat-y',
+      backgroundSize: '15px 2px,15px 2px, 2px 15px, 2px 15px',
+      backgroundPosition: 'left top, right bottom,left bottom,right top',
+      animation: `${css.borderDance} 400ms infinite linear`,
+    },
   },
   bottomBar: {
     borderRadius: theme.radius.md,
@@ -215,7 +231,7 @@ function PdfStampAddPage() {
               disableDragging={loading}
               enableResizing={!loading}
               minWidth={100}
-              className={classes.rnd}
+              className={`${classes.rnd} ${!loading ? classes.rndBorder : ''}`}
             >
               <Stamp
                 width={stampSize.width}
