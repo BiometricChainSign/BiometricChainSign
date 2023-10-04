@@ -119,7 +119,7 @@ export const sepoliaABI = [
   },
 ] as const
 
-export const sepoliaAddress = '0xeF427b6E656b7a63fbA3769946afD161E2aB27B3' as const
+export const sepoliaAddress = '0x202d46dCE27b6fC582A967eb0e9Aa5cd6072015a' as const
 
 export const sepoliaConfig = { address: sepoliaAddress, abi: sepoliaABI } as const
 

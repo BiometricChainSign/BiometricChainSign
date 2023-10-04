@@ -205,6 +205,7 @@ function FaceCapturePage() {
       }
 
       if (navigationState?.action === 'verify') {
+        startCountdown()
         await testImage(cid)
         navigate('/verification-success')
       }
