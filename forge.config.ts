@@ -13,7 +13,7 @@ const config: ForgeConfig = {
     name: 'BiometricChainSign',
     asar: true,
     icon: join(process.cwd(), 'src', 'electron', 'static', 'imgs', 'icon.ico'),
-    extraResource: [join(process.cwd(), 'src', 'electron', 'static', 'imgs', 'icon.ico')],
+    extraResource: join(process.cwd(), 'src', 'electron', 'static'),
   },
   makers: [
     new MakerSquirrel({

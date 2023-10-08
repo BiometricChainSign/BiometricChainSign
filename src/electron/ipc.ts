@@ -1,6 +1,6 @@
 import 'dotenv/config'
 
-import { ipcMain } from 'electron'
+import { ipcMain, app } from 'electron'
 import { spawn } from 'child_process'
 import { join } from 'path'
 import fs from 'fs/promises'
@@ -8,7 +8,9 @@ import { createWriteStream } from 'fs'
 import { Web3Storage, getFilesFromPath } from 'web3.storage'
 
 let web3Storage = new Web3Storage({ token: process.env.WEB3_STORAGE_API_TOKEN! })
-const dir = join(__dirname, 'static')
+const appPath = process.env.NODE_ENV === 'development' ? __dirname : app.getAppPath().replace(/\\app\.asar$/, '')
+
+const dir = join(appPath, 'static')
 
 async function callScript(scriptName: string, argv: { [key: string]: unknown }) {
   if (/^win/i.test(process.platform)) {

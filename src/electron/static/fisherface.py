@@ -144,10 +144,10 @@ class FisherfaceFaceRecognizer:
             )
 
         detected_face = self.preprocess_img(test_img)
-        
+
         if detected_face is not None:
             label, confidence = self.model.predict(detected_face)
-            if confidence < _confidence if _confidence is not None else 220:
+            if confidence < (_confidence if _confidence is not None else 215):
                 return label, confidence
             else:
                 return None, None
@@ -199,10 +199,10 @@ if __name__ == "__main__":
             os.path.join(
                 BASE_PATH, *re.split(r"[\\/]", args["data"]["modelFile"]))
         )
-        
+
         test_result: List[tuple[int, float]] = []
 
-        for img_path in args["data"]["testImagesPath"]:                  
+        for img_path in args["data"]["testImagesPath"]:
             label, confidence = recognizer.predict(
                 cv2.imread(
                     os.path.join(
@@ -210,14 +210,13 @@ if __name__ == "__main__":
                         re.split(r"[\\/]", img_path)
                     )
                 ),
-                300
             )
 
             if label is not None and confidence is not None:
                 test_result.append((label, confidence))
-                
+
         if len(test_result) > 0:
             label, confidence = min(test_result, key=lambda x: x[1])
             print(json.dumps({"label": label, "confidence": confidence}))
         else:
-             print(json.dumps({"label": None, "confidence": None}))
+            print(json.dumps({"label": None, "confidence": None}))
