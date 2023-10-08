@@ -1,6 +1,6 @@
 import { Button, Stack, Title } from '@mantine/core'
 import { IconCurrencyEthereum } from '@tabler/icons-react'
-import { useWeb3Modal } from '@web3modal/react'
+import { useWeb3Modal } from '@web3modal/wagmi/react'
 
 export default function ConnectPage() {
   const { open } = useWeb3Modal()
@@ -9,7 +9,7 @@ export default function ConnectPage() {
     <Stack h='100%' m='auto' justify='center' align='center'>
       <Title>Bem-vindo</Title>
 
-      <Button onClick={open} leftIcon={<IconCurrencyEthereum stroke='1' />}>
+      <Button onClick={() => open()} leftIcon={<IconCurrencyEthereum stroke='1' />}>
         Conectar carteira
       </Button>
     </Stack>

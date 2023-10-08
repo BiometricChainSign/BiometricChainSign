@@ -29,6 +29,7 @@
     "@tabler/icons-react": "^2.32.0",
     "@web3modal/ethereum": "^2.7.0",
     "@web3modal/react": "^2.7.0",
+    "@web3modal/wagmi": "^3.0.2",
     "canvg": "^4.0.1",
     "dotenv": "^16.3.1",
     "electron-squirrel-startup": "^1.0.0",

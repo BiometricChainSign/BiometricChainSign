@@ -4,25 +4,35 @@ import { useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
 import { MantineProvider } from '@mantine/core'
 import { Notifications } from '@mantine/notifications'
-import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum'
-import { configureChains, createConfig, WagmiConfig } from 'wagmi'
+import { WagmiConfig } from 'wagmi'
+
+import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi/react'
 import { /*mainnet,*/ sepolia } from 'wagmi/chains'
-import { Web3Modal } from '@web3modal/react'
 
 import Routes from './routes'
 
 const chains = [/*mainnet,*/ sepolia]
 const projectId = '1790d0716aba5ac0c6ac1e5a5c8968cd'
 
-const { publicClient } = configureChains(chains, [w3mProvider({ projectId })])
+const metadata = {
+  name: 'BiometricChainSign',
+  description: 'BiometricChainSign: Secure Biometric Blockchain Signatures.',
+  url: 'BiometricChainSign',
+  icons: ['https://bafybeifayhmtseoi7cqm322aaiilaweodao5dxjnsh6fqbtqp4bhbwddo4.ipfs.w3s.link/icon.png'],
+}
 
-const wagmiConfig = createConfig({
-  autoConnect: true,
-  connectors: w3mConnectors({ projectId, chains }),
-  publicClient,
+const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata })
+createWeb3Modal({
+  wagmiConfig,
+  projectId,
+  chains,
+  defaultChain: chains[0],
+  themeMode: 'light',
+  themeVariables: {
+    '--w3m-font-family': 'Open Sans Variable, sans-serif',
+    '--w3m-accent': '#4c6ef5',
+  },
 })
-
-const ethereumClient = new EthereumClient(wagmiConfig, chains)
 
 function App() {
   useEffect(() => {
@@ -53,19 +63,6 @@ function App() {
       <WagmiConfig config={wagmiConfig}>
         <Routes />
       </WagmiConfig>
-
-      <Web3Modal
-        projectId={projectId}
-        ethereumClient={ethereumClient}
-        defaultChain={chains[0]}
-        enableNetworkView
-        themeMode='light'
-        themeVariables={{
-          '--w3m-font-family': 'Open Sans Variable, sans-serif',
-          '--w3m-accent-color': '#4c6ef5',
-          '--w3m-background-color': '#4c6ef5',
-        }}
-      />
     </MantineProvider>
   )
 }
