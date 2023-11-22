@@ -11,7 +11,7 @@ Para executar o BiometricChainSign em modo de desenvolvimento, siga os passos ab
 1. Clone este repositório:
 
    ```bash
-   git clone https://github.com/Constantini21/BiometricChainSign.git
+   git clone https://github.com/BiometricChainSign/BiometricChainSign
    ```
 
 2. Navegue até o diretório do projeto:
