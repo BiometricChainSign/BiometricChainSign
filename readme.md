@@ -1,6 +1,6 @@
 # BiometricChainSign
 
-<img src="https://bafybeifayhmtseoi7cqm322aaiilaweodao5dxjnsh6fqbtqp4bhbwddo4.ipfs.w3s.link/icon.png" alt="BiometricChainSign Logo" width="200">
+<img src="https://raw.githubusercontent.com/BiometricChainSign/BiometricChainSign/main/src/electron/static/imgs/icon.png" alt="BiometricChainSignLogo" width="200">
 
 O BiometricChainSign é um projeto que integra o reconhecimento facial e a tecnologia blockchain para fornecer uma solução avançada de assinatura de documentos. Neste repositório, você encontrará o código-fonte do sistema, juntamente com instruções abrangentes para configurar e executar o projeto em um ambiente de desenvolvimento.
 
@@ -36,9 +36,9 @@ Agora o BiometricChainSign está em execução em modo de desenvolvimento.
 
 ## Download para Windows
 
-Para fazer o download do BiometricChainSign para Windows, [clique aqui](https://drive.google.com/file/d/19tzO8RkieATcnF_O4R3jTsXg41n3S2de/view?usp=drive_link).
+Para fazer o download do BiometricChainSign para Windows, [clique aqui](https://sourceforge.net/projects/biometricchainsign/files/BiometricChainSign-1.0.0%20Setup.exe/download).
 
-**Checksum MD5:** 558A7B4C28A17A41DF2CBBD6E85AF6A2
+**Checksum MD5:** DC5D1A9ED1C02D9D71A49565090FC87A
 
 ## Repositórios Relacionados
 
@@ -47,7 +47,7 @@ Para fazer o download do BiometricChainSign para Windows, [clique aqui](https://
 
 ## Contrato Inteligente na Rede de Teste
 
-O contrato inteligente BiometricChainSign está disponível na rede de teste Ethereum. Você pode ver mais detalhes [aqui](https://sepolia.etherscan.io/address/0x202d46dCE27b6fC582A967eb0e9Aa5cd6072015a).
+O contrato inteligente BiometricChainSign está disponível na rede de teste Ethereum. Você pode ver mais detalhes [aqui](https://sepolia.etherscan.io/address/0x8164CE12dF1DdAA41d67e7349996aaEF5F053c20).
 
 ## Contribuições
 

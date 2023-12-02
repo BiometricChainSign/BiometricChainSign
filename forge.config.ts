@@ -25,6 +25,8 @@ const config: ForgeConfig = {
       noDelta: true,
       noMsi: false,
       setupIcon: join(process.cwd(), 'src', 'electron', 'static', 'imgs', 'icon.ico'),
+      iconUrl:
+        'https://raw.githubusercontent.com/BiometricChainSign/BiometricChainSign/main/src/electron/static/imgs/icon.ico',
       setupMsi: 'BiometricChainSign',
     }),
     new MakerZIP({}, ['darwin']),

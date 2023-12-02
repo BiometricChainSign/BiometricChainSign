@@ -18,7 +18,9 @@ const metadata = {
   name: 'BiometricChainSign',
   description: 'BiometricChainSign: Secure Biometric Blockchain Signatures.',
   url: 'BiometricChainSign',
-  icons: ['https://bafybeifayhmtseoi7cqm322aaiilaweodao5dxjnsh6fqbtqp4bhbwddo4.ipfs.w3s.link/icon.png'],
+  icons: [
+    'https://raw.githubusercontent.com/BiometricChainSign/BiometricChainSign/main/src/electron/static/imgs/icon.png',
+  ],
 }
 
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata })

@@ -119,7 +119,7 @@ export const sepoliaABI = [
   },
 ] as const
 
-export const sepoliaAddress = '0x202d46dCE27b6fC582A967eb0e9Aa5cd6072015a' as const
+export const sepoliaAddress = '0x8164CE12dF1DdAA41d67e7349996aaEF5F053c20' as const
 
 export const sepoliaConfig = { address: sepoliaAddress, abi: sepoliaABI } as const
 
@@ -165,7 +165,7 @@ export function writeMainnet<TFunctionName extends string>(
  */
 export function prepareWriteMainnet<
   TAbi extends readonly unknown[] = typeof mainnetABI,
-  TFunctionName extends string = string
+  TFunctionName extends string = string,
 >(config: Omit<PrepareWriteContractConfig<TAbi, TFunctionName>, 'abi' | 'address'>) {
   return prepareWriteContract({
     abi: mainnetABI,
@@ -212,7 +212,7 @@ export function writeSepolia<TFunctionName extends string>(
  */
 export function prepareWriteSepolia<
   TAbi extends readonly unknown[] = typeof sepoliaABI,
-  TFunctionName extends string = string
+  TFunctionName extends string = string,
 >(config: Omit<PrepareWriteContractConfig<TAbi, TFunctionName>, 'abi' | 'address'>) {
   return prepareWriteContract({
     abi: sepoliaABI,
